@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentación - Sistema de Gestión de Piscicultura "Lagos Andinos" SRL</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background-color: #f5f5f5;
+      color: #222;
+    }
+    header {
+      background: linear-gradient(135deg, #0b7285, #1864ab);
+      color: #fff;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.8rem;
+    }
+    header p {
+      margin: 0.2rem 0;
+    }
+    main {
+      max-width: 1100px;
+      margin: 1.5rem auto 3rem;
+      padding: 0 1rem;
+    }
+    nav {
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+    nav h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+    nav ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0.5rem 0 0;
+    }
+    nav li {
+      margin: 0.15rem 0;
+    }
+    nav a {
+      color: #0b7285;
+      text-decoration: none;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    section {
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+    section h2 {
+      margin-top: 0;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.4rem;
+      font-size: 1.4rem;
+    }
+    section h3 {
+      margin-top: 1.2rem;
+      font-size: 1.1rem;
+    }
+    section h4 {
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    .small-note {
+      font-size: 0.9rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Documentación del Proyecto</h1>
+    <p>Sistema de Gestión Integral de Piscicultura "Lagos Andinos" SRL</p>
+    <p class="small-note">Desarrollado con Blazor Hybrid, ASP.NET Core Web API y SQL Server 2022</p>
+  </header>
+
+  <main>
+    <nav>
+      <h2>Índice</h2>
+      <ul>
+        <li><a href="#capitulo-1">Capítulo I: Aspectos Generales</a></li>
+        <li><a href="#capitulo-2">Capítulo II: Marco Teórico (No realizado)</a></li>
+        <li><a href="#capitulo-3">Capítulo III: Ingeniería del Proyecto</a></li>
+        <li><a href="#capitulo-5">Capítulo V: Recomendaciones</a></li>
+        <li><a href="#capitulo-6">Capítulo VI: Bibliografía</a></li>
+      </ul>
+    </nav>
+
+    <!-- CAPÍTULO I -->
+    <section id="capitulo-1">
+      <h2>CAPÍTULO I: ASPECTOS GENERALES</h2>
+
+      <h3>1.1 Título del proyecto</h3>
+      <p><strong>Desarrollo de un Sistema de Gestión Integral de Piscicultura mediante Blazor Hybrid y SQL Server para la empresa "Lagos Andinos" SRL.</strong></p>
+
+      <h3>1.2 Introducción</h3>
+      <p>
+        La acuicultura en la región andina ha pasado de ser una actividad artesanal a una industria que exige precisión técnica para ser rentable.
+        En este contexto, la empresa "Lagos Andinos" SRL se dedica a la crianza de trucha, carpa y tilapia, procesos que requieren un monitoreo riguroso de variables
+        ambientales y biológicas.
+      </p>
+      <p>
+        La acuicultura es una actividad fundamental para satisfacer la creciente demanda de proteína de origen acuático. El proceso de crianza de peces requiere un
+        control meticuloso de las condiciones del agua, alimentación balanceada y monitoreo constante para obtener peces de calidad comercial optimizando la
+        inversión del productor.
+      </p>
+      <p>
+        El presente proyecto propone el desarrollo de una solución tecnológica moderna utilizando el stack de Microsoft. La implementación de una aplicación
+        Blazor Hybrid permitirá a los técnicos capturar datos en tiempo real desde dispositivos móviles en los estanques, sincronizándolos con una base de
+        datos centralizada en SQL Server. Esto garantiza que la información sobre alimentación, calidad del agua y crecimiento de los lotes esté disponible para
+        la toma de decisiones estratégicas de manera inmediata.
+      </p>
+
+      <h4>Proceso General de Piscicultura</h4>
+      <p>
+        El proceso en "Lagos Andinos" comienza con la adquisición de alevines (peces juveniles) de trucha, carpa y tilapia, los cuales provienen de proveedores
+        certificados o se reproducen en la misma piscifactoría. Estos alevines son colocados en estanques especializados con agua de calidad controlada.
+      </p>
+      <p>
+        Durante el crecimiento, los peces son alimentados con concentrados especiales ricos en proteínas y nutrientes esenciales. La alimentación se realiza
+        múltiples veces al día según la etapa de crecimiento y las condiciones ambientales.
+      </p>
+      <p>
+        Los peces son monitoreados constantemente para detectar signos de enfermedad o estrés. El agua de los estanques se analiza regularmente para mantener
+        niveles óptimos de oxígeno, pH, temperatura y otros parámetros críticos.
+      </p>
+      <p>
+        Una vez que los peces alcanzan el peso comercial, son cosechados, clasificados por tamaño y peso, y preparados para su comercialización en mercados
+        locales y restaurantes especializados.
+      </p>
+
+      <h3>1.3 Planteamiento del problema</h3>
+      <p>
+        Actualmente, "Lagos Andinos" SRL carece de una plataforma digital centralizada para el control de su producción. La dependencia de registros manuales
+        y la dispersión de la información generan los siguientes conflictos operativos:
+      </p>
+      <ul>
+        <li><strong>Incertidumbre en la trazabilidad:</strong> dificultad para rastrear el ciclo de vida completo de un lote, desde su ingreso como alevín hasta su cosecha.</li>
+        <li><strong>Riesgo de mortandad:</strong> falta de alertas tempranas sobre parámetros críticos del agua (pH, oxígeno, temperatura) que puede derivar en pérdidas económicas.</li>
+        <li><strong>Descontrol en la alimentación:</strong> uso ineficiente del concentrado alimenticio al no estar ajustado dinámicamente a la etapa de crecimiento y condiciones del estanque.</li>
+        <li><strong>Información desactualizada:</strong> retraso entre la toma de datos en campo y su análisis en oficina, impidiendo una reacción ágil ante imprevistos biológicos.</li>
+      </ul>
+
+      <h3>1.4 Delimitaciones</h3>
+
+      <h4>1.4.1. Delimitación espacial o geográfica</h4>
+      <p>
+        El proyecto se desarrollará y aplicará específicamente para las instalaciones de la piscifactoría "Lagos Andinos" SRL, ubicada en la zona de influencia
+        de la región andina (Bolivia). El sistema está diseñado para operar en las condiciones específicas de esta ubicación geográfica.
+      </p>
+
+      <h4>1.4.2. Delimitación temporal</h4>
+      <p>
+        El desarrollo del sistema se llevará a cabo en un periodo de <strong>6 meses</strong>, comprendidos entre marzo y agosto de 2026, abarcando desde el
+        relevamiento de requisitos hasta las pruebas finales de producción.
+      </p>
+      <ul>
+        <li><strong>Marzo 2026:</strong> Relevamiento de requisitos y diseño inicial.</li>
+        <li><strong>Abril 2026:</strong> Diseño detallado y arquitectura del sistema.</li>
+        <li><strong>Mayo 2026:</strong> Desarrollo de módulos principales (Sprint 1 y 2).</li>
+        <li><strong>Junio 2026:</strong> Desarrollo de módulos secundarios (Sprint 3 y 4).</li>
+        <li><strong>Julio 2026:</strong> Integración, pruebas y ajustes (Sprint 5).</li>
+        <li><strong>Agosto 2026:</strong> Pruebas finales, documentación y puesta en producción.</li>
+      </ul>
+
+      <h4>1.4.3. Delimitación tecnológica</h4>
+      <p>El proyecto está limitado al uso de las siguientes tecnologías:</p>
+      <ul>
+        <li><strong>Lenguaje de Programación:</strong> C# (.NET 9).</li>
+        <li><strong>Framework de Frontend:</strong> Blazor Hybrid (MAUI para soporte multiplataforma).</li>
+        <li><strong>Framework de Backend:</strong> ASP.NET Core Web API.</li>
+        <li><strong>Motor de Base de Datos:</strong> SQL Server 2022.</li>
+        <li><strong>Entorno de Desarrollo:</strong> Visual Studio 2022 Community.</li>
+      </ul>
+
+      <h3>1.5 Objetivo General</h3>
+      <p>
+        Desarrollar e implementar un sistema de gestión de piscicultura para "Lagos Andinos" SRL utilizando Blazor Hybrid y SQL Server, que permita automatizar
+        el control de lotes de producción, el monitoreo de parámetros de agua y la gestión de alimentación para optimizar la trazabilidad y eficiencia operativa
+        de la empresa.
+      </p>
+
+      <h3>1.6 Objetivos Específicos</h3>
+      <ul>
+        <li>Identificar y documentar los requerimientos funcionales y no funcionales de los procesos de cría, monitoreo y cosecha mediante historias de usuario.</li>
+        <li>Diseñar la arquitectura del sistema y el modelo de datos relacional en SQL Server, aplicando normas de integridad y normalización.</li>
+        <li>Construir el Product Backlog priorizado y realizar la estimación de esfuerzo utilizando técnicas de Planning Poker bajo la metodología XP + SCRUM.</li>
+        <li>Codificar los módulos de gestión de lotes, parámetros ambientales y reportes utilizando C# y Blazor Hybrid.</li>
+        <li>Establecer un plan de mantenimiento y respaldo de datos para garantizar la confiabilidad y seguridad de la información crítica de la piscifactoría.</li>
+      </ul>
+    </section>
+
+    <!-- Las secciones de los demás capítulos se irán incorporando progresivamente -->
+  </main>
+</body>
+</html>
