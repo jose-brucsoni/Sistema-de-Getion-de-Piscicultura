@@ -1,0 +1,148 @@
+<div class="section-container">
+  <div>
+    <div class="tabs" data-estanques-tabs>
+      <button class="tab-button tab-button--active" type="button" data-estanques-tab="lista">Lista</button>
+      <button class="tab-button" type="button" data-estanques-tab="crear">Crear</button>
+      <button class="tab-button" type="button" data-estanques-tab="editar">Editar / Desactivar</button>
+    </div>
+
+    <div data-estanques-view="lista">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Estanques registrados</div>
+          <div class="card-title">Vista general</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Código</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Tipo</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Volumen (m³)</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Capacidad máx. peces</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estado</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Ocupación actual</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-001</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Pequeño</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">50</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">5.000</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#16a34a;">Activo</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">3.200</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-101</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Mediano</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">200</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">2.000</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#16a34a;">Activo</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">1.850</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-205</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Grande</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">500</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">800</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#16a34a;">Activo</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">640</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;">E-310</td>
+                  <td style="padding:0.45rem 0.6rem;">Pequeño</td>
+                  <td style="padding:0.45rem 0.6rem;">50</td>
+                  <td style="padding:0.45rem 0.6rem;">5.000</td>
+                  <td style="padding:0.45rem 0.6rem;color:#f97316;">Mantenimiento</td>
+                  <td style="padding:0.45rem 0.6rem;">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div data-estanques-view="crear" style="display:none;">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Nuevo estanque</div>
+          <div class="card-title">Registrar estanque</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="nuevo-estanque-codigo">Código</label>
+              <input id="nuevo-estanque-codigo" type="text" placeholder="Ej. E-401" />
+            </div>
+            <div class="field">
+              <label for="nuevo-estanque-tipo">Tipo</label>
+              <select id="nuevo-estanque-tipo">
+                <option>Pequeño (50 m³)</option>
+                <option>Mediano (200 m³)</option>
+                <option>Grande (500 m³)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="nuevo-estanque-volumen">Volumen (m³)</label>
+              <input id="nuevo-estanque-volumen" type="number" min="0" placeholder="Ej. 50" />
+            </div>
+            <div class="field">
+              <label for="nuevo-estanque-capacidad">Capacidad máxima de peces</label>
+              <input id="nuevo-estanque-capacidad" type="number" min="0" placeholder="Ej. 5000" />
+            </div>
+            <div class="field">
+              <label for="nuevo-estanque-estado">Estado</label>
+              <select id="nuevo-estanque-estado">
+                <option>Activo</option>
+                <option>Inactivo</option>
+                <option>Mantenimiento</option>
+              </select>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar estanque</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </div>
+
+    <div data-estanques-view="editar" style="display:none;">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Editar / desactivar</div>
+          <div class="card-title">Seleccionar estanque</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="editar-estanque-codigo">Estanque</label>
+              <select id="editar-estanque-codigo">
+                <option>E-001</option>
+                <option>E-101</option>
+                <option>E-205</option>
+                <option>E-310</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-estanque-tipo">Tipo</label>
+              <select id="editar-estanque-tipo">
+                <option>Pequeño (50 m³)</option>
+                <option>Mediano (200 m³)</option>
+                <option>Grande (500 m³)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-estanque-estado">Estado</label>
+              <select id="editar-estanque-estado">
+                <option>Activo</option>
+                <option>Inactivo</option>
+                <option>Mantenimiento</option>
+              </select>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar cambios</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+

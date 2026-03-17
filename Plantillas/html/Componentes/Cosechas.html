@@ -1,0 +1,140 @@
+<div class="section-container">
+  <div>
+    <div class="tabs" data-cosechas-tabs>
+      <button class="tab-button tab-button--active" type="button" data-cosechas-tab="lista">Lista</button>
+      <button class="tab-button" type="button" data-cosechas-tab="registrar">Registrar cosecha</button>
+      <button class="tab-button" type="button" data-cosechas-tab="historial">Historial</button>
+    </div>
+
+    <div data-cosechas-view="lista">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Cosechas recientes</div>
+          <div class="card-title">Producción final por lote</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Fecha</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Especie</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Cant. peces</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Peso total (kg)</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Destino</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">10/03/2026</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2025-023</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Tilapia</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">780</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">265.4</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Mercado mayorista</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">05/03/2026</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2025-017</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Trucha arcoíris</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">620</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">210.3</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Restaurantes</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;">25/02/2026</td>
+                  <td style="padding:0.45rem 0.6rem;">LOT-2025-012</td>
+                  <td style="padding:0.45rem 0.6rem;">Carpa común</td>
+                  <td style="padding:0.45rem 0.6rem;">1.050</td>
+                  <td style="padding:0.45rem 0.6rem;">345.9</td>
+                  <td style="padding:0.45rem 0.6rem;">Supermercados</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div data-cosechas-view="registrar" style="display:none;">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Nueva cosecha</div>
+          <div class="card-title">Registrar producción final</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="cosecha-lote">Lote</label>
+              <select id="cosecha-lote">
+                <option>LOT-2025-023</option>
+                <option>LOT-2025-017</option>
+                <option>LOT-2025-012</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cosecha-fecha">Fecha</label>
+              <input id="cosecha-fecha" type="date" />
+            </div>
+            <div class="field">
+              <label for="cosecha-hora">Hora</label>
+              <input id="cosecha-hora" type="time" />
+            </div>
+            <div class="field">
+              <label for="cosecha-cantidad">Cantidad de peces</label>
+              <input id="cosecha-cantidad" type="number" min="0" />
+            </div>
+            <div class="field">
+              <label for="cosecha-peso">Peso total (kg)</label>
+              <input id="cosecha-peso" type="number" min="0" step="0.1" />
+            </div>
+            <div class="field">
+              <label for="cosecha-destino">Destino</label>
+              <select id="cosecha-destino">
+                <option>Mercado mayorista</option>
+                <option>Restaurantes</option>
+                <option>Supermercados</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cosecha-temperatura">Temperatura de transporte (°C)</label>
+              <input id="cosecha-temperatura" type="number" min="0" step="0.1" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar cosecha</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </div>
+
+    <div data-cosechas-view="historial" style="display:none;">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Historial de cosechas</div>
+          <div class="card-title">Filtros básicos</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="hist-cosecha-especie">Especie</label>
+              <select id="hist-cosecha-especie">
+                <option>Todas</option>
+                <option>Trucha arcoíris</option>
+                <option>Carpa común</option>
+                <option>Tilapia</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="hist-cosecha-desde">Desde</label>
+              <input id="hist-cosecha-desde" type="date" />
+            </div>
+            <div class="field">
+              <label for="hist-cosecha-hasta">Hasta</label>
+              <input id="hist-cosecha-hasta" type="date" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Aplicar filtros</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel principal · Sistema de Piscicultura</title>
+  <link rel="stylesheet" href="../../css/Estilos.css" />
+</head>
+<body>
+  <div class="layout-shell">
+    <aside class="layout-sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <img src="../../recursos/Iconos/PezSaltando.png" alt="Logo Lagos Andinos" />
+        </div>
+        <div class="sidebar-logo-text">
+          <span class="sidebar-logo-title">Lagos Andinos SRL</span>
+          <span class="sidebar-logo-subtitle">Gestión de piscicultura</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Navegación principal">
+        <div>
+          <div class="sidebar-nav-section">General</div>
+          <a class="sidebar-link sidebar-link--active" href="Principal.html">Inicio</a>
+        </div>
+        <div>
+          <div class="sidebar-nav-section">Producción</div>
+          <a class="sidebar-link" href="#" data-view="lotes">Lotes</a>
+          <a class="sidebar-link" href="#" data-view="crianza">Crianza</a>
+          <a class="sidebar-link" href="#" data-view="cosechas">Cosechas</a>
+        </div>
+        <div>
+          <div class="sidebar-nav-section">Monitoreo</div>
+          <a class="sidebar-link" href="#" data-view="seguimiento-alimentacion-e-inventario">Seguimiento de alimentación e inventario</a>
+          <a class="sidebar-link" href="#" data-view="parametros-agua">Parámetros del agua</a>
+          <a class="sidebar-link" href="#" data-view="alimentacion">Alimentación</a>
+        </div>
+        <div>
+          <div class="sidebar-nav-section">Configuración</div>
+          <a class="sidebar-link" href="#" data-view="estanques">Estanques</a>
+          <a class="sidebar-link" href="#" data-view="especies">Especies</a>
+          <a class="sidebar-link" href="#" data-view="proveedores">Proveedores</a>
+          <a class="sidebar-link" href="#" data-view="usuarios-roles">Usuarios y roles</a>
+        </div>
+      </nav>
+    </aside>
+
+    <div class="layout-main">
+      <header class="layout-main-header">
+        <div class="layout-main-title">Panel principal</div>
+        <div class="layout-main-user">
+          Sesión iniciada como <strong>técnico.demo</strong> ·
+          <a href="../Paginas/InicioDeSesion.html" style="color: var(--baltic-blue); text-decoration: none;">Cerrar sesión</a>
+        </div>
+      </header>
+
+      <main class="layout-main-body">
+        <div id="main-content">
+          <div class="section-container">
+            <div class="section-header">
+              <div class="section-kicker">Resumen</div>
+              <h1 class="section-title">Dashboard de producción y sanidad</h1>
+              <p class="section-text">
+                Indicadores clave de lotes, biomasa, alimentación y calidad del agua (datos de ejemplo).
+              </p>
+            </div>
+
+            <div class="section-grid">
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Lotes activos</div>
+                <div class="card-title">Situación general</div>
+                <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem;color:#4b5563;display:flex;gap:1.5rem;flex-wrap:wrap;">
+                  <li><strong>8</strong> lotes activos</li>
+                  <li><strong>3</strong> especies en producción</li>
+                  <li><strong>2</strong> lotes próximos a cosecha (&lt; 15 días)</li>
+                </ul>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Biomasa estimada</div>
+                <div class="card-title">Kg por especie</div>
+                <div id="chart-biomasa" style="min-height:260px;"></div>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Alimentación</div>
+                <div class="card-title">Consumo diario vs plan</div>
+                <div id="chart-consumo" style="min-height:260px;"></div>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Calidad del agua</div>
+                <div class="card-title">Parámetros dentro de rango</div>
+                <div id="chart-parametros" style="min-height:280px;"></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="../../js/scripts.js"></script>
+</body>
+</html>

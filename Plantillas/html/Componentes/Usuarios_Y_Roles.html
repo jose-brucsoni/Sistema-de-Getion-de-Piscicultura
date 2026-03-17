@@ -1,0 +1,146 @@
+<div class="section-container">
+  <div>
+    <div class="tabs" data-user-tabs>
+      <button class="tab-button tab-button--active" type="button" data-user-tab="lista">Lista</button>
+      <button class="tab-button" type="button" data-user-tab="crear">Crear</button>
+      <button class="tab-button" type="button" data-user-tab="editar">Editar / Desactivar</button>
+    </div>
+
+    <div data-user-view="lista">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Usuarios habilitados</div>
+          <div class="card-title">Listado actual</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Usuario</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Nombre completo</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Rol</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estado</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Último acceso</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Correo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">admin</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Ana Rodríguez</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Administrador</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#16a34a;">Activo</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026 08:12</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">ana.admin@lagosandinos.bo</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">tecnico01</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carlos Pérez</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Técnico acuícola</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#16a34a;">Activo</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026 06:45</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">carlos.perez@lagosandinos.bo</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">tecnico02</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">María Gómez</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Técnico acuícola</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#f97316;">Suspendido</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">10/03/2026 15:20</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">maria.gomez@lagosandinos.bo</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;">supervisor01</td>
+                  <td style="padding:0.45rem 0.6rem;">Jorge López</td>
+                  <td style="padding:0.45rem 0.6rem;">Supervisor</td>
+                  <td style="padding:0.45rem 0.6rem;color:#16a34a;">Activo</td>
+                  <td style="padding:0.45rem 0.6rem;">16/03/2026 19:05</td>
+                  <td style="padding:0.45rem 0.6rem;">jorge.lopez@lagosandinos.bo</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div data-user-view="crear" style="display:none;">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Nuevo usuario</div>
+          <div class="card-title">Registrar usuario</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="nuevo-usuario">Usuario</label>
+              <input id="nuevo-usuario" type="text" placeholder="Ej. tecnico03" />
+            </div>
+            <div class="field">
+              <label for="nuevo-nombre">Nombre completo</label>
+              <input id="nuevo-nombre" type="text" placeholder="Nombre y apellido" />
+            </div>
+            <div class="field">
+              <label for="nuevo-correo">Correo</label>
+              <input id="nuevo-correo" type="email" placeholder="correo@lagosandinos.bo" />
+            </div>
+            <div class="field">
+              <label for="nuevo-rol">Rol</label>
+              <select id="nuevo-rol">
+                <option>Administrador</option>
+                <option>Técnico acuícola</option>
+                <option>Supervisor</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="nuevo-estado">Estado</label>
+              <select id="nuevo-estado">
+                <option>Activo</option>
+                <option>Suspendido</option>
+              </select>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar usuario</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </div>
+
+    <div data-user-view="editar" style="display:none;">
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Editar / desactivar</div>
+          <div class="card-title">Seleccionar usuario</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="editar-usuario">Usuario</label>
+              <select id="editar-usuario">
+                <option>admin</option>
+                <option>tecnico01</option>
+                <option>tecnico02</option>
+                <option>supervisor01</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-rol">Rol</label>
+              <select id="editar-rol">
+                <option>Administrador</option>
+                <option>Técnico acuícola</option>
+                <option>Supervisor</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-estado">Estado</label>
+              <select id="editar-estado">
+                <option>Activo</option>
+                <option>Suspendido</option>
+              </select>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar cambios</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+

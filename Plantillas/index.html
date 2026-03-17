@@ -4,521 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lagos Andinos SRL - Gestión de Piscicultura</title>
-  <style>
-    :root {
-      --carbon-black: #222222ff;
-      --white: #ffffffff;
-      --baltic-blue: #1c5d99ff;
-      --pacific-blue: #639fabff;
-      --powder-blue: #bbcde5ff;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--carbon-black);
-      background: radial-gradient(circle at top, var(--powder-blue) 0, #f5f7fb 40%, #ffffff 100%);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      position: fixed;
-      inset-inline: 0;
-      top: 0;
-      z-index: 20;
-      background: transparent;
-      border: none;
-    }
-
-    .nav {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .brand-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      overflow: hidden;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-    }
-
-    .brand-logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title {
-      font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--white);
-    }
-
-    .brand-subtitle {
-      font-size: 0.8rem;
-      color: #6b7280;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      font-size: 0.9rem;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: #a7a7a7;
-      padding: 0.35rem 0.75rem;
-      border-radius: 999px;
-      transition: background-color 0.2s ease, color 0.2s ease;
-      font-weight: 600;
-      font-size: 0.9rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-
-    }
-
-    .nav-links a:hover {
-      background: var(--baltic-blue);
-      color: var(--white);
-    }
-
-    .btn-login {
-      border-radius: 999px;
-      padding: 0.45rem 1.1rem;
-      border: none;
-      background: linear-gradient(135deg, var(--baltic-blue), var(--pacific-blue));
-      color: var(--white);
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(28, 93, 153, 0.35);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .btn-login:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 26px rgba(28, 93, 153, 0.45);
-    }
-
-    .btn-login:active {
-      transform: translateY(0);
-      box-shadow: 0 4px 12px rgba(28, 93, 153, 0.3);
-    }
-
-    main {
-      flex: 1;
-    }
-
-    .hero-section {
-      position: relative;
-      min-height: 100vh;
-      color: var(--white);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 1.5rem 3rem;
-      overflow: hidden;
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      z-index: -2;
-    }
-
-    .hero-bg img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transform: scale(1.02);
-    }
-
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.5) 100%);
-    }
-
-    .hero {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding-top: 5.5rem;
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
-      gap: 2.5rem;
-      align-items: center;
-    }
-
-    .hero-kicker {
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--baltic-blue);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .hero-kicker-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--pacific-blue);
-      box-shadow: 0 0 0 4px rgba(99, 159, 171, 0.25);
-    }
-
-    .hero-title {
-      font-size: clamp(2rem, 3vw + 1rem, 2.8rem);
-      font-weight: 750;
-      letter-spacing: -0.03em;
-      color: var(--white);
-      margin-bottom: 1rem;
-    }
-
-    .hero-title--secondary {
-      font-size: clamp(1.4rem, 2vw + 0.4rem, 2rem);
-      font-weight: 650;
-    }
-
-    .hero-title span {
-      color: var(--pacific-blue);
-    }
-
-    .hero-subtitle {
-      font-size: 0.98rem;
-      color: rgba(255, 255, 255, 0.86);
-      max-width: 34rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.85rem;
-      align-items: center;
-      margin-bottom: 1.75rem;
-    }
-
-    .btn-outline {
-      border-radius: 999px;
-      padding: 0.45rem 1.1rem;
-      border: 1px solid rgba(28, 93, 153, 0.2);
-      background: rgba(255, 255, 255, 0.75);
-      color: var(--baltic-blue);
-      font-weight: 500;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .btn-outline:hover {
-      background: rgba(187, 205, 229, 0.35);
-      border-color: rgba(28, 93, 153, 0.45);
-    }
-
-    .hero-metadata {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      font-size: 0.8rem;
-      color: rgba(229, 231, 235, 0.86);
-    }
-
-    .hero-metadata-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-
-    .hero-metadata-label {
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-weight: 600;
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
-    .hero-metadata-value {
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    .hero-media {
-      position: absolute;
-      inset-block: 0;
-      inset-inline: 0;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-inline: 0.75rem;
-    }
-
-    .hero-media button {
-      pointer-events: auto;
-      border-radius: 999px;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      font-weight: 600;
-      background: rgba(255, 255, 255, 0.86);
-      border: 1px solid rgba(28, 93, 153, 0.25);
-      color: var(--baltic-blue);
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.45);
-    }
-
-    .hero-media button:hover {
-      background: #ffffff;
-      border-color: rgba(28, 93, 153, 0.5);
-    }
-
-    .hero-card-primary,
-    .hero-badge {
-      display: none;
-    }
-
-    section {
-      padding: 2.5rem 1.5rem 0;
-    }
-
-    .section-container {
-      max-width: 1120px;
-      margin: 0 auto;
-      border-radius: 24px;
-      padding: 2rem 2.2rem;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 20px 50px rgba(148, 163, 184, 0.25);
-      display: grid;
-      gap: 2rem;
-    }
-
-    .section-header {
-      max-width: 520px;
-    }
-
-    .section-kicker {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--baltic-blue);
-      margin-bottom: 0.5rem;
-    }
-
-    .section-title {
-      font-size: 1.45rem;
-      font-weight: 650;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
-    }
-
-    .section-text {
-      font-size: 0.96rem;
-      color: #4b5563;
-    }
-
-    .section-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.7rem;
-    }
-
-    .card {
-      padding: 1.4rem 1.35rem;
-      border-radius: 18px;
-      border: 1px solid rgba(187, 205, 229, 0.8);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 255, 0.96));
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-    }
-
-    .card-label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: #9ca3af;
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--carbon-black);
-    }
-
-    .card-text {
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-
-    .contact-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-      gap: 2rem;
-      align-items: center;
-    }
-
-    .contact-form {
-      display: grid;
-      gap: 0.9rem;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      font-size: 0.86rem;
-    }
-
-    .field label {
-      font-weight: 500;
-      color: #374151;
-    }
-
-    .field input,
-    .field textarea {
-      border-radius: 12px;
-      border: 1px solid rgba(187, 205, 229, 0.9);
-      padding: 0.5rem 0.7rem;
-      font-size: 0.9rem;
-      font-family: inherit;
-      outline: none;
-      background: rgba(255, 255, 255, 0.95);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-    }
-
-    .field input:focus,
-    .field textarea:focus {
-      border-color: var(--baltic-blue);
-      box-shadow: 0 0 0 1px rgba(28, 93, 153, 0.4);
-      background: #ffffff;
-    }
-
-    .field textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .contact-meta {
-      display: grid;
-      gap: 0.9rem;
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-
-    .contact-item-title {
-      font-weight: 600;
-      color: var(--carbon-black);
-    }
-
-    .contact-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 999px;
-      background: rgba(28, 93, 153, 0.06);
-      color: var(--baltic-blue);
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    footer {
-      padding: 1.8rem 1.5rem 2.2rem;
-      font-size: 0.8rem;
-      color: #9ca3af;
-    }
-
-    .footer-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.85rem;
-    }
-
-    .footer-links span {
-      cursor: default;
-    }
-
-    @media (max-width: 900px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .section-container {
-        padding: 1.7rem 1.4rem;
-      }
-
-      .contact-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .nav {
-        padding-inline: 1.1rem;
-      }
-
-      .nav-links {
-        display: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/Estilos.css" />
 </head>
 <body>
   <div class="page">
@@ -536,7 +22,7 @@
           <a href="#bienvenida">Inicio</a>
           <a href="#quienes-somos">Quiénes somos</a>
           <a href="#contacto">Contáctanos</a>
-          <a href="InicioDeSesion.html">Iniciar sesión</a>
+          <a href="/Plantillas/html/Paginas/InicioDeSesion.html">Iniciar sesión</a>
         </div>
       </nav>
     </header>
@@ -570,9 +56,9 @@
             <div class="section-kicker">Quiénes somos</div>
             <h2 class="section-title" id="quienes-title">Tecnología pensada para piscicultores andinos</h2>
             <p class="section-text">
-              Inspirado en el caso de estudio de “Lagos Andinos” SRL, este sistema nace para resolver problemas muy
-              concretos: trazabilidad incompleta, riesgo de mortalidad por falta de alertas y uso ineficiente del
-              alimento.
+              Este sistema fue diseñado a partir de la realidad de “Lagos Andinos” SRL: una piscifactoría que
+              necesita tomar decisiones rápidas con información confiable, sin obligar al personal a entender
+              términos técnicos o complejas herramientas de software.
             </p>
           </div>
           <div class="section-grid">
@@ -580,24 +66,109 @@
               <div class="card-label">Visión</div>
               <div class="card-title">Una bitácora digital de cada lote</div>
               <p class="card-text">
-                Registramos la historia completa de cada lote, sus traslados entre estanques, parámetros de agua,
-                tratamientos y cosechas, para que cada decisión esté sustentada en datos.
+                Para cada grupo de peces (lote) se guarda una “historia clínica”: dónde fue sembrado, en qué
+                estanques ha vivido, qué alimentación recibió, qué parámetros tenía el agua y cómo fue su cosecha.
+                Todo en un solo lugar y en un lenguaje sencillo.
               </p>
             </article>
             <article class="card">
               <div class="card-label">Enfoque</div>
               <div class="card-title">Operaciones en tiempo real</div>
               <p class="card-text">
-                Blazor Hybrid permite que técnicos capturen información directamente en los estanques desde móviles
-                o tablets, sincronizándola con SQL Server para análisis inmediato.
+                Los técnicos registran datos directamente en los estanques usando un celular o tablet. Lo que ellos
+                anotan en campo se actualiza de inmediato en la base de datos de la empresa, para que el encargado
+                vea el mismo dato desde la oficina sin demoras ni cuadernos de por medio.
               </p>
             </article>
             <article class="card">
               <div class="card-label">Confianza</div>
               <div class="card-title">Datos seguros y consistentes</div>
               <p class="card-text">
-                Aplicamos buenas prácticas de ingeniería de software, seguridad y respaldo para resguardar uno de
-                los activos más valiosos de la piscifactoría: su información histórica de producción.
+                La información de la producción se respalda y organiza de forma automática. Así se reducen errores
+                de escritura, se evitan hojas sueltas y se cuenta con un historial claro para auditorías, visitas
+                sanitarias o decisiones de inversión.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="como-funciona-title">
+        <div class="section-container">
+          <div class="section-header">
+            <div class="section-kicker">Cómo funciona el sistema</div>
+            <h2 class="section-title" id="como-funciona-title">Del estanque al reporte en pocos pasos</h2>
+            <p class="section-text">
+              La idea es que cualquier persona del equipo, incluso sin formación en informática, entienda qué hace
+              el sistema y cómo le ayuda en su trabajo diario.
+            </p>
+          </div>
+          <div class="section-grid">
+            <article class="card">
+              <div class="card-label">1. Registro en campo</div>
+              <div class="card-title">Lo que ve el técnico</div>
+              <p class="card-text">
+                En el estanque, el técnico abre la aplicación, elige el estanque o lote y llena formularios muy
+                simples: cuántos peces sembró o cosechó, qué cantidad de alimento utilizó o qué valores tuvo el
+                agua (temperatura, pH, oxígeno, etc.).
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-label">2. Almacenamiento automático</div>
+              <div class="card-title">Lo que hace el sistema por detrás</div>
+              <p class="card-text">
+                Cada registro se guarda en una base de datos central. El sistema valida que los valores tengan
+                sentido (por ejemplo, que el estanque no supere su capacidad) y, si detecta algo extraño, marca el
+                dato para revisarlo.
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-label">3. Alertas y resúmenes</div>
+              <div class="card-title">Lo que ve el supervisor</div>
+              <p class="card-text">
+                En la oficina, el supervisor entra a un panel donde puede ver resúmenes claros: lotes activos,
+                consumo de alimento, mortalidad, parámetros del agua fuera de rango y productividad por especie.
+                No necesita hacer cálculos a mano: el sistema los presenta listos para decidir.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="beneficios-title">
+        <div class="section-container">
+          <div class="section-header">
+            <div class="section-kicker">Beneficios para la piscifactoría</div>
+            <h2 class="section-title" id="beneficios-title">Qué gana la empresa al usar este sistema</h2>
+            <p class="section-text">
+              Más allá de la tecnología, el objetivo es que productores, técnicos y supervisores trabajen con menos
+              estrés y más control sobre lo que ocurre en los estanques.
+            </p>
+          </div>
+          <div class="section-grid">
+            <article class="card">
+              <div class="card-label">Decisiones informadas</div>
+              <div class="card-title">Menos improvisación, más datos</div>
+              <p class="card-text">
+                En lugar de basarse solo en la experiencia o la memoria, el personal puede ver cómo se ha
+                comportado cada lote a lo largo del tiempo y ajustar la alimentación, tratamientos o cosechas según
+                resultados reales.
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-label">Ahorro y control</div>
+              <div class="card-title">Mejor uso del alimento y los estanques</div>
+              <p class="card-text">
+                El sistema ayuda a evitar sobrecargar estanques, desperdiciar alimento o perder peces por no
+                detectar a tiempo cambios en el agua, lo que se traduce en menos pérdidas y mejor rendimiento.
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-label">Transparencia</div>
+              <div class="card-title">Información clara para terceros</div>
+              <p class="card-text">
+                Ante clientes, auditores o entidades sanitarias, la empresa puede mostrar con claridad qué se hizo,
+                cuándo y cómo se controlaron los parámetros clave, fortaleciendo la confianza en su producto.
               </p>
             </article>
           </div>
@@ -667,102 +238,6 @@
     </footer>
   </div>
 
-  <script>
-    (function () {
-      var heroSlides = [
-        {
-          image: "recursos/Imagenes/VistaPanoramicaDeLasLagunasDeCrianza.jpg",
-          title: "Bienvenido al sistema de <span>Gestión De Piscicultura</span> de “Lagos Andinos”.",
-          subtitle: "Centraliza la trazabilidad de tus lotes, el monitoreo del agua y la alimentación diaria desde una única plataforma híbrida pensada para la región andina.",
-          secondary: false
-        },
-        {
-          image: "recursos/Imagenes/FondoDePescesAcumulados.jpg",
-          title: "Control fino de lotes, biomasa y calidad del agua en un solo vistazo.",
-          subtitle: "Visualiza el estado sanitario de cada estanque y toma decisiones informadas antes de que los problemas impacten tu producción.",
-          secondary: true
-        },
-        {
-          image: "recursos/Imagenes/VistaDeTrabajadorRecolectandoLosPesces(1).jpg",
-          title: "Datos capturados en campo, decisiones estratégicas en oficina.",
-          subtitle: "Técnicos registran información desde dispositivos móviles mientras supervisores analizan indicadores clave en tiempo real.",
-          secondary: true
-        }
-      ];
-
-      var currentHeroIndex = 0;
-      var heroBgImage = document.getElementById("hero-bg-image");
-      var heroTitle = document.getElementById("hero-title");
-      var heroSubtitle = document.getElementById("hero-subtitle");
-
-      function renderHero(index) {
-        var slide = heroSlides[index];
-        if (!slide || !heroBgImage || !heroTitle || !heroSubtitle) return;
-        heroBgImage.src = slide.image;
-        heroTitle.innerHTML = slide.title;
-        heroSubtitle.textContent = slide.subtitle;
-
-        if (slide.secondary) {
-          heroTitle.classList.add("hero-title--secondary");
-        } else {
-          heroTitle.classList.remove("hero-title--secondary");
-        }
-      }
-
-      var btnPrev = document.querySelector("[data-hero-prev]");
-      var btnNext = document.querySelector("[data-hero-next]");
-
-      if (btnPrev) {
-        btnPrev.addEventListener("click", function () {
-          currentHeroIndex = (currentHeroIndex - 1 + heroSlides.length) % heroSlides.length;
-          renderHero(currentHeroIndex);
-        });
-      }
-
-      if (btnNext) {
-        btnNext.addEventListener("click", function () {
-          currentHeroIndex = (currentHeroIndex + 1) % heroSlides.length;
-          renderHero(currentHeroIndex);
-        });
-      }
-
-      renderHero(currentHeroIndex);
-
-      var yearSpan = document.getElementById("year");
-      if (yearSpan) {
-        yearSpan.textContent = new Date().getFullYear().toString();
-      }
-
-      function navigateToLogin() {
-        window.location.href = "InicioDeSesion.html";
-      }
-
-      var loginButtons = document.querySelectorAll("[data-login]");
-      loginButtons.forEach(function (btn) {
-        btn.addEventListener("click", navigateToLogin);
-      });
-
-      document.querySelectorAll("[data-scroll]").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var targetSelector = btn.getAttribute("data-scroll");
-          if (!targetSelector) return;
-          var target = document.querySelector(targetSelector);
-          if (!target) return;
-          window.scrollTo({
-            top: target.offsetTop - 72,
-            behavior: "smooth"
-          });
-        });
-      });
-
-      var form = document.getElementById("contact-form");
-      if (form) {
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-          alert("Gracias por tu interés. Esta es una maqueta visual; la integración con el backend se realizará más adelante.");
-        });
-      }
-    })();
-  </script>
+  <script src="js/scripts.js"></script>
 </body>
 </html>
