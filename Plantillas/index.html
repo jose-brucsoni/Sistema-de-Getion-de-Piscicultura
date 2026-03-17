@@ -3,214 +3,766 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Documentación - Sistema de Gestión de Piscicultura "Lagos Andinos" SRL</title>
+  <title>Lagos Andinos SRL - Gestión de Piscicultura</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    :root {
+      --carbon-black: #222222ff;
+      --white: #ffffffff;
+      --baltic-blue: #1c5d99ff;
+      --pacific-blue: #639fabff;
+      --powder-blue: #bbcde5ff;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--carbon-black);
+      background: radial-gradient(circle at top, var(--powder-blue) 0, #f5f7fb 40%, #ffffff 100%);
       line-height: 1.6;
-      background-color: #f5f5f5;
-      color: #222;
+      -webkit-font-smoothing: antialiased;
     }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
     header {
-      background: linear-gradient(135deg, #0b7285, #1864ab);
-      color: #fff;
-      padding: 2rem 1.5rem;
-      text-align: center;
+      position: fixed;
+      inset-inline: 0;
+      top: 0;
+      z-index: 20;
+      background: transparent;
+      border: none;
     }
-    header h1 {
-      margin: 0 0 0.5rem;
-      font-size: 1.8rem;
+
+    .nav {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
     }
-    header p {
-      margin: 0.2rem 0;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
-    main {
-      max-width: 1100px;
-      margin: 1.5rem auto 3rem;
-      padding: 0 1rem;
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
     }
-    nav {
-      background-color: #ffffff;
-      border-radius: 0.5rem;
-      padding: 1rem 1.25rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
-    nav h2 {
-      margin-top: 0;
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-weight: 700;
       font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--white);
     }
-    nav ul {
-      list-style: none;
-      padding-left: 0;
-      margin: 0.5rem 0 0;
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: #6b7280;
     }
-    nav li {
-      margin: 0.15rem 0;
-    }
-    nav a {
-      color: #0b7285;
-      text-decoration: none;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    section {
-      background-color: #ffffff;
-      border-radius: 0.5rem;
-      padding: 1.5rem 1.75rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    }
-    section h2 {
-      margin-top: 0;
-      border-bottom: 1px solid #e0e0e0;
-      padding-bottom: 0.4rem;
-      font-size: 1.4rem;
-    }
-    section h3 {
-      margin-top: 1.2rem;
-      font-size: 1.1rem;
-    }
-    section h4 {
-      margin-top: 1rem;
-      font-size: 1rem;
-    }
-    ul {
-      padding-left: 1.2rem;
-    }
-    .small-note {
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
       font-size: 0.9rem;
-      color: #555;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #a7a7a7;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+
+    }
+
+    .nav-links a:hover {
+      background: var(--baltic-blue);
+      color: var(--white);
+    }
+
+    .btn-login {
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      border: none;
+      background: linear-gradient(135deg, var(--baltic-blue), var(--pacific-blue));
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(28, 93, 153, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px rgba(28, 93, 153, 0.45);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(28, 93, 153, 0.3);
+    }
+
+    main {
+      flex: 1;
+    }
+
+    .hero-section {
+      position: relative;
+      min-height: 100vh;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1.5rem 3rem;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1.02);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.5) 100%);
+    }
+
+    .hero {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding-top: 5.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .hero-kicker {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--baltic-blue);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--pacific-blue);
+      box-shadow: 0 0 0 4px rgba(99, 159, 171, 0.25);
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 3vw + 1rem, 2.8rem);
+      font-weight: 750;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .hero-title--secondary {
+      font-size: clamp(1.4rem, 2vw + 0.4rem, 2rem);
+      font-weight: 650;
+    }
+
+    .hero-title span {
+      color: var(--pacific-blue);
+    }
+
+    .hero-subtitle {
+      font-size: 0.98rem;
+      color: rgba(255, 255, 255, 0.86);
+      max-width: 34rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      align-items: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .btn-outline {
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      border: 1px solid rgba(28, 93, 153, 0.2);
+      background: rgba(255, 255, 255, 0.75);
+      color: var(--baltic-blue);
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-outline:hover {
+      background: rgba(187, 205, 229, 0.35);
+      border-color: rgba(28, 93, 153, 0.45);
+    }
+
+    .hero-metadata {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: rgba(229, 231, 235, 0.86);
+    }
+
+    .hero-metadata-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .hero-metadata-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 600;
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .hero-metadata-value {
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .hero-media {
+      position: absolute;
+      inset-block: 0;
+      inset-inline: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-inline: 0.75rem;
+    }
+
+    .hero-media button {
+      pointer-events: auto;
+      border-radius: 999px;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(28, 93, 153, 0.25);
+      color: var(--baltic-blue);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.45);
+    }
+
+    .hero-media button:hover {
+      background: #ffffff;
+      border-color: rgba(28, 93, 153, 0.5);
+    }
+
+    .hero-card-primary,
+    .hero-badge {
+      display: none;
+    }
+
+    section {
+      padding: 2.5rem 1.5rem 0;
+    }
+
+    .section-container {
+      max-width: 1120px;
+      margin: 0 auto;
+      border-radius: 24px;
+      padding: 2rem 2.2rem;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 20px 50px rgba(148, 163, 184, 0.25);
+      display: grid;
+      gap: 2rem;
+    }
+
+    .section-header {
+      max-width: 520px;
+    }
+
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--baltic-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-text {
+      font-size: 0.96rem;
+      color: #4b5563;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.7rem;
+    }
+
+    .card {
+      padding: 1.4rem 1.35rem;
+      border-radius: 18px;
+      border: 1px solid rgba(187, 205, 229, 0.8);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 255, 0.96));
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .card-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #9ca3af;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--carbon-black);
+    }
+
+    .card-text {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .contact-form {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.86rem;
+    }
+
+    .field label {
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .field input,
+    .field textarea {
+      border-radius: 12px;
+      border: 1px solid rgba(187, 205, 229, 0.9);
+      padding: 0.5rem 0.7rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      background: rgba(255, 255, 255, 0.95);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--baltic-blue);
+      box-shadow: 0 0 0 1px rgba(28, 93, 153, 0.4);
+      background: #ffffff;
+    }
+
+    .field textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .contact-meta {
+      display: grid;
+      gap: 0.9rem;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .contact-item-title {
+      font-weight: 600;
+      color: var(--carbon-black);
+    }
+
+    .contact-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(28, 93, 153, 0.06);
+      color: var(--baltic-blue);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    footer {
+      padding: 1.8rem 1.5rem 2.2rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    .footer-links span {
+      cursor: default;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .section-container {
+        padding: 1.7rem 1.4rem;
+      }
+
+      .contact-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        padding-inline: 1.1rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Documentación del Proyecto</h1>
-    <p>Sistema de Gestión Integral de Piscicultura "Lagos Andinos" SRL</p>
-    <p class="small-note">Desarrollado con Blazor Hybrid, ASP.NET Core Web API y SQL Server 2022</p>
-  </header>
+  <div class="page">
+    <header>
+      <nav class="nav">
+        <div class="brand">
+          <div class="brand-logo">
+            <img src="recursos/Iconos/PezSaltando.png" alt="Lagos Andinos - detalle de peces" />
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">Lagos Andinos SRL</span>
+          </div>
+        </div>
+        <div class="nav-links">
+          <a href="#bienvenida">Inicio</a>
+          <a href="#quienes-somos">Quiénes somos</a>
+          <a href="#contacto">Contáctanos</a>
+          <a href="InicioDeSesion.html">Iniciar sesión</a>
+        </div>
+      </nav>
+    </header>
 
-  <main>
-    <nav>
-      <h2>Índice</h2>
-      <ul>
-        <li><a href="#capitulo-1">Capítulo I: Aspectos Generales</a></li>
-        <li><a href="#capitulo-2">Capítulo II: Marco Teórico (No realizado)</a></li>
-        <li><a href="#capitulo-3">Capítulo III: Ingeniería del Proyecto</a></li>
-        <li><a href="#capitulo-5">Capítulo V: Recomendaciones</a></li>
-        <li><a href="#capitulo-6">Capítulo VI: Bibliografía</a></li>
-      </ul>
-    </nav>
+    <main>
+      <section id="bienvenida" aria-labelledby="hero-title" class="hero-section">
+        <div class="hero-bg">
+          <img id="hero-bg-image" src="recursos/Imagenes/VistaPanoramicaDeLasLagunasDeCrianza.jpg" alt="Vista panorámica de las lagunas de crianza" />
+        </div>
+        <div class="hero-overlay" aria-hidden="true"></div>
+        <div class="hero">
+          <div class="hero-content">
+            <h1 id="hero-title" class="hero-title">
+              Bienvenido al sistema de <span>Gestión De Piscicultura</span> de <span>“Lagos Andinos”</span>.
+            </h1>
+            <p class="hero-subtitle" id="hero-subtitle">
+              Centraliza la trazabilidad de tus lotes, el monitoreo del agua y la alimentación diaria desde una
+              única plataforma híbrida pensada para la región andina.
+            </p>
+          </div>
+          <div class="hero-media" aria-label="Controles del carrusel">
+            <button type="button" class="btn-outline" data-hero-prev aria-label="Imagen anterior">&#10094;</button>
+            <button type="button" class="btn-outline" data-hero-next aria-label="Imagen siguiente">&#10095;</button>
+          </div>
+        </div>
+      </section>
 
-    <!-- CAPÍTULO I -->
-    <section id="capitulo-1">
-      <h2>CAPÍTULO I: ASPECTOS GENERALES</h2>
+      <section id="quienes-somos" aria-labelledby="quienes-title">
+        <div class="section-container">
+          <div class="section-header">
+            <div class="section-kicker">Quiénes somos</div>
+            <h2 class="section-title" id="quienes-title">Tecnología pensada para piscicultores andinos</h2>
+            <p class="section-text">
+              Inspirado en el caso de estudio de “Lagos Andinos” SRL, este sistema nace para resolver problemas muy
+              concretos: trazabilidad incompleta, riesgo de mortalidad por falta de alertas y uso ineficiente del
+              alimento.
+            </p>
+          </div>
+          <div class="section-grid">
+            <article class="card">
+              <div class="card-label">Visión</div>
+              <div class="card-title">Una bitácora digital de cada lote</div>
+              <p class="card-text">
+                Registramos la historia completa de cada lote, sus traslados entre estanques, parámetros de agua,
+                tratamientos y cosechas, para que cada decisión esté sustentada en datos.
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-label">Enfoque</div>
+              <div class="card-title">Operaciones en tiempo real</div>
+              <p class="card-text">
+                Blazor Hybrid permite que técnicos capturen información directamente en los estanques desde móviles
+                o tablets, sincronizándola con SQL Server para análisis inmediato.
+              </p>
+            </article>
+            <article class="card">
+              <div class="card-label">Confianza</div>
+              <div class="card-title">Datos seguros y consistentes</div>
+              <p class="card-text">
+                Aplicamos buenas prácticas de ingeniería de software, seguridad y respaldo para resguardar uno de
+                los activos más valiosos de la piscifactoría: su información histórica de producción.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
 
-      <h3>1.1 Título del proyecto</h3>
-      <p><strong>Desarrollo de un Sistema de Gestión Integral de Piscicultura mediante Blazor Hybrid y SQL Server para la empresa "Lagos Andinos" SRL.</strong></p>
+      <section id="contacto" aria-labelledby="contacto-title">
+        <div class="section-container contact-layout">
+          <div>
+            <div class="section-kicker">Contáctanos</div>
+            <h2 class="section-title" id="contacto-title">¿Te gustaría implementar este sistema en tu piscifactoría?</h2>
+            <p class="section-text" style="margin-bottom: 1.3rem;">
+              Déjanos tus datos y un responsable técnico podrá adaptar la solución del caso “Lagos Andinos” a las
+              particularidades de tu operación.
+            </p>
+            <form class="contact-form" id="contact-form" novalidate>
+              <div class="field">
+                <label for="nombre">Nombre completo</label>
+                <input id="nombre" name="nombre" type="text" autocomplete="name" placeholder="Ej. Ana Pérez" />
+              </div>
+              <div class="field">
+                <label for="correo">Correo electrónico</label>
+                <input id="correo" name="correo" type="email" autocomplete="email" placeholder="nombre@empresa.com" />
+              </div>
+              <div class="field">
+                <label for="mensaje">Mensaje</label>
+                <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos brevemente sobre tu proyecto de piscicultura."></textarea>
+              </div>
+              <div class="field">
+                <button class="btn-login" type="submit">Enviar consulta</button>
+              </div>
+            </form>
+          </div>
+          <div class="contact-meta">
+            <div>
+              <span class="contact-pill">Caso de estudio: “Lagos Andinos” SRL</span>
+            </div>
+            <div>
+              <div class="contact-item-title">Soporte para decisiones diarias</div>
+              <p>
+                Dashboards, alertas por parámetros críticos del agua y seguimiento de alimentación diaria para
+                reaccionar antes de que un problema se convierta en pérdida de producción.
+              </p>
+            </div>
+            <div>
+              <div class="contact-item-title">Operación en campo y oficina</div>
+              <p>
+                Técnicos registran datos en los estanques desde dispositivos móviles; supervisores analizan la
+                información consolidada desde la oficina o el escritorio.
+              </p>
+            </div>
+            <div>
+              <img src="recursos/Imagenes/VistaDeTrabajadorRecolectandoLosPesces(1).jpg" alt="Trabajador recolectando peces en campo" style="width:100%;border-radius:18px;box-shadow:0 20px 45px rgba(15,23,42,0.45);object-fit:cover;" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
-      <h3>1.2 Introducción</h3>
-      <p>
-        La acuicultura en la región andina ha pasado de ser una actividad artesanal a una industria que exige precisión técnica para ser rentable.
-        En este contexto, la empresa "Lagos Andinos" SRL se dedica a la crianza de trucha, carpa y tilapia, procesos que requieren un monitoreo riguroso de variables
-        ambientales y biológicas.
-      </p>
-      <p>
-        La acuicultura es una actividad fundamental para satisfacer la creciente demanda de proteína de origen acuático. El proceso de crianza de peces requiere un
-        control meticuloso de las condiciones del agua, alimentación balanceada y monitoreo constante para obtener peces de calidad comercial optimizando la
-        inversión del productor.
-      </p>
-      <p>
-        El presente proyecto propone el desarrollo de una solución tecnológica moderna utilizando el stack de Microsoft. La implementación de una aplicación
-        Blazor Hybrid permitirá a los técnicos capturar datos en tiempo real desde dispositivos móviles en los estanques, sincronizándolos con una base de
-        datos centralizada en SQL Server. Esto garantiza que la información sobre alimentación, calidad del agua y crecimiento de los lotes esté disponible para
-        la toma de decisiones estratégicas de manera inmediata.
-      </p>
+    <footer>
+      <div class="footer-inner">
+        <span>© <span id="year"></span> Lagos Andinos SRL · Sistema de Gestión de Piscicultura.</span>
+        <div class="footer-links">
+          <span>Blazor Hybrid · ASP.NET Core · SQL Server</span>
+        </div>
+      </div>
+    </footer>
+  </div>
 
-      <h4>Proceso General de Piscicultura</h4>
-      <p>
-        El proceso en "Lagos Andinos" comienza con la adquisición de alevines (peces juveniles) de trucha, carpa y tilapia, los cuales provienen de proveedores
-        certificados o se reproducen en la misma piscifactoría. Estos alevines son colocados en estanques especializados con agua de calidad controlada.
-      </p>
-      <p>
-        Durante el crecimiento, los peces son alimentados con concentrados especiales ricos en proteínas y nutrientes esenciales. La alimentación se realiza
-        múltiples veces al día según la etapa de crecimiento y las condiciones ambientales.
-      </p>
-      <p>
-        Los peces son monitoreados constantemente para detectar signos de enfermedad o estrés. El agua de los estanques se analiza regularmente para mantener
-        niveles óptimos de oxígeno, pH, temperatura y otros parámetros críticos.
-      </p>
-      <p>
-        Una vez que los peces alcanzan el peso comercial, son cosechados, clasificados por tamaño y peso, y preparados para su comercialización en mercados
-        locales y restaurantes especializados.
-      </p>
+  <script>
+    (function () {
+      var heroSlides = [
+        {
+          image: "recursos/Imagenes/VistaPanoramicaDeLasLagunasDeCrianza.jpg",
+          title: "Bienvenido al sistema de <span>Gestión De Piscicultura</span> de “Lagos Andinos”.",
+          subtitle: "Centraliza la trazabilidad de tus lotes, el monitoreo del agua y la alimentación diaria desde una única plataforma híbrida pensada para la región andina.",
+          secondary: false
+        },
+        {
+          image: "recursos/Imagenes/FondoDePescesAcumulados.jpg",
+          title: "Control fino de lotes, biomasa y calidad del agua en un solo vistazo.",
+          subtitle: "Visualiza el estado sanitario de cada estanque y toma decisiones informadas antes de que los problemas impacten tu producción.",
+          secondary: true
+        },
+        {
+          image: "recursos/Imagenes/VistaDeTrabajadorRecolectandoLosPesces(1).jpg",
+          title: "Datos capturados en campo, decisiones estratégicas en oficina.",
+          subtitle: "Técnicos registran información desde dispositivos móviles mientras supervisores analizan indicadores clave en tiempo real.",
+          secondary: true
+        }
+      ];
 
-      <h3>1.3 Planteamiento del problema</h3>
-      <p>
-        Actualmente, "Lagos Andinos" SRL carece de una plataforma digital centralizada para el control de su producción. La dependencia de registros manuales
-        y la dispersión de la información generan los siguientes conflictos operativos:
-      </p>
-      <ul>
-        <li><strong>Incertidumbre en la trazabilidad:</strong> dificultad para rastrear el ciclo de vida completo de un lote, desde su ingreso como alevín hasta su cosecha.</li>
-        <li><strong>Riesgo de mortandad:</strong> falta de alertas tempranas sobre parámetros críticos del agua (pH, oxígeno, temperatura) que puede derivar en pérdidas económicas.</li>
-        <li><strong>Descontrol en la alimentación:</strong> uso ineficiente del concentrado alimenticio al no estar ajustado dinámicamente a la etapa de crecimiento y condiciones del estanque.</li>
-        <li><strong>Información desactualizada:</strong> retraso entre la toma de datos en campo y su análisis en oficina, impidiendo una reacción ágil ante imprevistos biológicos.</li>
-      </ul>
+      var currentHeroIndex = 0;
+      var heroBgImage = document.getElementById("hero-bg-image");
+      var heroTitle = document.getElementById("hero-title");
+      var heroSubtitle = document.getElementById("hero-subtitle");
 
-      <h3>1.4 Delimitaciones</h3>
+      function renderHero(index) {
+        var slide = heroSlides[index];
+        if (!slide || !heroBgImage || !heroTitle || !heroSubtitle) return;
+        heroBgImage.src = slide.image;
+        heroTitle.innerHTML = slide.title;
+        heroSubtitle.textContent = slide.subtitle;
 
-      <h4>1.4.1. Delimitación espacial o geográfica</h4>
-      <p>
-        El proyecto se desarrollará y aplicará específicamente para las instalaciones de la piscifactoría "Lagos Andinos" SRL, ubicada en la zona de influencia
-        de la región andina (Bolivia). El sistema está diseñado para operar en las condiciones específicas de esta ubicación geográfica.
-      </p>
+        if (slide.secondary) {
+          heroTitle.classList.add("hero-title--secondary");
+        } else {
+          heroTitle.classList.remove("hero-title--secondary");
+        }
+      }
 
-      <h4>1.4.2. Delimitación temporal</h4>
-      <p>
-        El desarrollo del sistema se llevará a cabo en un periodo de <strong>6 meses</strong>, comprendidos entre marzo y agosto de 2026, abarcando desde el
-        relevamiento de requisitos hasta las pruebas finales de producción.
-      </p>
-      <ul>
-        <li><strong>Marzo 2026:</strong> Relevamiento de requisitos y diseño inicial.</li>
-        <li><strong>Abril 2026:</strong> Diseño detallado y arquitectura del sistema.</li>
-        <li><strong>Mayo 2026:</strong> Desarrollo de módulos principales (Sprint 1 y 2).</li>
-        <li><strong>Junio 2026:</strong> Desarrollo de módulos secundarios (Sprint 3 y 4).</li>
-        <li><strong>Julio 2026:</strong> Integración, pruebas y ajustes (Sprint 5).</li>
-        <li><strong>Agosto 2026:</strong> Pruebas finales, documentación y puesta en producción.</li>
-      </ul>
+      var btnPrev = document.querySelector("[data-hero-prev]");
+      var btnNext = document.querySelector("[data-hero-next]");
 
-      <h4>1.4.3. Delimitación tecnológica</h4>
-      <p>El proyecto está limitado al uso de las siguientes tecnologías:</p>
-      <ul>
-        <li><strong>Lenguaje de Programación:</strong> C# (.NET 9).</li>
-        <li><strong>Framework de Frontend:</strong> Blazor Hybrid (MAUI para soporte multiplataforma).</li>
-        <li><strong>Framework de Backend:</strong> ASP.NET Core Web API.</li>
-        <li><strong>Motor de Base de Datos:</strong> SQL Server 2022.</li>
-        <li><strong>Entorno de Desarrollo:</strong> Visual Studio 2022 Community.</li>
-      </ul>
+      if (btnPrev) {
+        btnPrev.addEventListener("click", function () {
+          currentHeroIndex = (currentHeroIndex - 1 + heroSlides.length) % heroSlides.length;
+          renderHero(currentHeroIndex);
+        });
+      }
 
-      <h3>1.5 Objetivo General</h3>
-      <p>
-        Desarrollar e implementar un sistema de gestión de piscicultura para "Lagos Andinos" SRL utilizando Blazor Hybrid y SQL Server, que permita automatizar
-        el control de lotes de producción, el monitoreo de parámetros de agua y la gestión de alimentación para optimizar la trazabilidad y eficiencia operativa
-        de la empresa.
-      </p>
+      if (btnNext) {
+        btnNext.addEventListener("click", function () {
+          currentHeroIndex = (currentHeroIndex + 1) % heroSlides.length;
+          renderHero(currentHeroIndex);
+        });
+      }
 
-      <h3>1.6 Objetivos Específicos</h3>
-      <ul>
-        <li>Identificar y documentar los requerimientos funcionales y no funcionales de los procesos de cría, monitoreo y cosecha mediante historias de usuario.</li>
-        <li>Diseñar la arquitectura del sistema y el modelo de datos relacional en SQL Server, aplicando normas de integridad y normalización.</li>
-        <li>Construir el Product Backlog priorizado y realizar la estimación de esfuerzo utilizando técnicas de Planning Poker bajo la metodología XP + SCRUM.</li>
-        <li>Codificar los módulos de gestión de lotes, parámetros ambientales y reportes utilizando C# y Blazor Hybrid.</li>
-        <li>Establecer un plan de mantenimiento y respaldo de datos para garantizar la confiabilidad y seguridad de la información crítica de la piscifactoría.</li>
-      </ul>
-    </section>
+      renderHero(currentHeroIndex);
 
-    <!-- Las secciones de los demás capítulos se irán incorporando progresivamente -->
-  </main>
+      var yearSpan = document.getElementById("year");
+      if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear().toString();
+      }
+
+      function navigateToLogin() {
+        window.location.href = "InicioDeSesion.html";
+      }
+
+      var loginButtons = document.querySelectorAll("[data-login]");
+      loginButtons.forEach(function (btn) {
+        btn.addEventListener("click", navigateToLogin);
+      });
+
+      document.querySelectorAll("[data-scroll]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var targetSelector = btn.getAttribute("data-scroll");
+          if (!targetSelector) return;
+          var target = document.querySelector(targetSelector);
+          if (!target) return;
+          window.scrollTo({
+            top: target.offsetTop - 72,
+            behavior: "smooth"
+          });
+        });
+      });
+
+      var form = document.getElementById("contact-form");
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          alert("Gracias por tu interés. Esta es una maqueta visual; la integración con el backend se realizará más adelante.");
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

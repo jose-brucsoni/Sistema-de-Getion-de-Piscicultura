@@ -43,9 +43,11 @@ El desarrollo del sistema se llevará a cabo en un periodo de 4 meses, comprendi
 
 Este proyecto incluye la siguiente documentación:
 
-1. **[CASO_DE_ESTUDIO.md](./CASO_DE_ESTUDIO.md)** - Análisis completo del caso de estudio y requerimientos
-2. **[ARQUITECTURA.md](./ARQUITECTURA.md)** - Estructura de páginas, componentes y organización del proyecto
-3. **[REQUERIMIENTOS.md](./REQUERIMIENTOS.md)** - Requerimientos funcionales y no funcionales del sistema
+1. **[CASO_DE_ESTUDIO.md](.Documentacion/CASO_DE_ESTUDIO.md)** - Análisis completo del caso de estudio y requerimientos
+2. **[ARQUITECTURA.md](.Documentacion/ARQUITECTURA.md)** - Estructura de páginas, componentes y organización del proyecto
+3. **[REQUERIMIENTOS.md](.Documentacion/REQUERIMIENTOS.md)** - Requerimientos funcionales y no funcionales del sistema
+
+Todo esta dentro de la carpeta llamada "Documentacion"
 
 ## Módulos Principales
 
