@@ -1,0 +1,150 @@
+@page "/principal"
+@rendermode InteractiveServer
+
+<PageTitle>Panel principal · Sistema de Piscicultura</PageTitle>
+
+<div class="layout-shell">
+  <aside class="layout-sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <img src="/recursos/Iconos/PezSaltando.png" alt="Logo Lagos Andinos" />
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-title">Lagos Andinos SRL</span>
+        <span class="sidebar-logo-subtitle">Gestión de piscicultura</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Navegación principal">
+      <div>
+        <div class="sidebar-nav-section">General</div>
+        <a class="sidebar-link @(_currentView == "dashboard" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("dashboard")' @onclick:preventDefault>Inicio</a>
+      </div>
+      <div>
+        <div class="sidebar-nav-section">Producción</div>
+        <a class="sidebar-link @(_currentView == "lotes" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("lotes")' @onclick:preventDefault>Lotes</a>
+        <a class="sidebar-link @(_currentView == "crianza" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("crianza")' @onclick:preventDefault>Crianza</a>
+        <a class="sidebar-link @(_currentView == "cosechas" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("cosechas")' @onclick:preventDefault>Cosechas</a>
+      </div>
+      <div>
+        <div class="sidebar-nav-section">Monitoreo</div>
+        <a class="sidebar-link @(_currentView == "seguimiento-alimentacion-e-inventario" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("seguimiento-alimentacion-e-inventario")' @onclick:preventDefault>Seguimiento de alimentación e inventario</a>
+        <a class="sidebar-link @(_currentView == "parametros-agua" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("parametros-agua")' @onclick:preventDefault>Parámetros del agua</a>
+        <a class="sidebar-link @(_currentView == "alimentacion" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("alimentacion")' @onclick:preventDefault>Alimentación</a>
+      </div>
+      <div>
+        <div class="sidebar-nav-section">Configuración</div>
+        <a class="sidebar-link @(_currentView == "estanques" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("estanques")' @onclick:preventDefault>Estanques</a>
+        <a class="sidebar-link @(_currentView == "especies" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("especies")' @onclick:preventDefault>Especies</a>
+        <a class="sidebar-link @(_currentView == "proveedores" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("proveedores")' @onclick:preventDefault>Proveedores</a>
+        <a class="sidebar-link @(_currentView == "usuarios-roles" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("usuarios-roles")' @onclick:preventDefault>Usuarios y roles</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="layout-main">
+    <header class="layout-main-header">
+      <div class="layout-main-title">Panel principal</div>
+      <div class="layout-main-user">
+        Sesión iniciada como <strong>técnico.demo</strong> ·
+        <a href="/inicio-de-sesion" style="color: var(--baltic-blue); text-decoration: none;">Cerrar sesión</a>
+      </div>
+    </header>
+
+    <main class="layout-main-body">
+      <div id="main-content">
+        @if (_currentView == "dashboard")
+        {
+          <div class="section-container">
+            <div class="section-header">
+              <div class="section-kicker">Resumen</div>
+              <h1 class="section-title">Dashboard de producción y sanidad</h1>
+              <p class="section-text">
+                Indicadores clave de lotes, biomasa, alimentación y calidad del agua (datos de ejemplo).
+              </p>
+            </div>
+
+            <div class="section-grid">
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Lotes activos</div>
+                <div class="card-title">Situación general</div>
+                <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem;color:#4b5563;display:flex;gap:1.5rem;flex-wrap:wrap;">
+                  <li><strong>8</strong> lotes activos</li>
+                  <li><strong>3</strong> especies en producción</li>
+                  <li><strong>2</strong> lotes próximos a cosecha (&lt; 15 días)</li>
+                </ul>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Biomasa estimada</div>
+                <div class="card-title">Kg por especie</div>
+                <div id="chart-biomasa" style="min-height:260px;"></div>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Alimentación</div>
+                <div class="card-title">Consumo diario vs plan</div>
+                <div id="chart-consumo" style="min-height:260px;"></div>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Calidad del agua</div>
+                <div class="card-title">Parámetros dentro de rango</div>
+                <div id="chart-parametros" style="min-height:280px;"></div>
+              </article>
+            </div>
+          </div>
+        }
+        else if (_currentView == "lotes")
+        {
+          <LotesContent />
+        }
+        else if (_currentView == "crianza")
+        {
+          <CrianzaContent />
+        }
+        else if (_currentView == "cosechas")
+        {
+          <CosechasContent />
+        }
+        else if (_currentView == "seguimiento-alimentacion-e-inventario")
+        {
+          <SeguimientoAlimentacionInventarioContent />
+        }
+        else if (_currentView == "parametros-agua")
+        {
+          <ParametrosDeAguaContent />
+        }
+        else if (_currentView == "alimentacion")
+        {
+          <AlimentacionContent />
+        }
+        else if (_currentView == "estanques")
+        {
+          <EstanquesContent />
+        }
+        else if (_currentView == "especies")
+        {
+          <EspeciesContent />
+        }
+        else if (_currentView == "proveedores")
+        {
+          <ProveedoresContent />
+        }
+        else if (_currentView == "usuarios-roles")
+        {
+          <UsuariosYRolesContent />
+        }
+      </div>
+    </main>
+  </div>
+</div>
+
+@code {
+  private string _currentView = "dashboard";
+
+  private void SelectView(string view)
+  {
+    _currentView = view;
+  }
+}

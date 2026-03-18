@@ -1,0 +1,153 @@
+<div class="section-container">
+  <div>
+    <div class="tabs">
+      <button type="button" class="tab-button @(_tab == "lista" ? "tab-button--active" : "")" @onclick='() => _tab = "lista"'>Lista</button>
+      <button type="button" class="tab-button @(_tab == "crear" ? "tab-button--active" : "")" @onclick='() => _tab = "crear"'>Registrar lote</button>
+      <button type="button" class="tab-button @(_tab == "editar" ? "tab-button--active" : "")" @onclick='() => _tab = "editar"'>Editar</button>
+    </div>
+
+    @if (_tab == "lista")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Lotes activos</div>
+          <div class="card-title">Vista general</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Código</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Especie</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estanque</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Fecha siembra</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Cant. inicial</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Cant. actual</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Proveedor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-001</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Trucha arcoíris</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-001</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">15/03/2026</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">3.000</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">2.850</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Acuicultura Andina SRL</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-004</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carpa común</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-101</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">10/02/2026</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">1.800</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">1.760</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Piscigranjas Altiplano</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;">LOT-2025-023</td>
+                  <td style="padding:0.45rem 0.6rem;">Tilapia</td>
+                  <td style="padding:0.45rem 0.6rem;">E-205</td>
+                  <td style="padding:0.45rem 0.6rem;">01/11/2025</td>
+                  <td style="padding:0.45rem 0.6rem;">900</td>
+                  <td style="padding:0.45rem 0.6rem;">860</td>
+                  <td style="padding:0.45rem 0.6rem;">Truchas del Sur Ltda.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "crear")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Nuevo lote</div>
+          <div class="card-title">Registrar lote de alevines</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="lote-codigo">Código de lote</label>
+              <input id="lote-codigo" type="text" placeholder="Se puede generar como LOT-YYYY-XXX" />
+            </div>
+            <div class="field">
+              <label for="lote-especie">Especie</label>
+              <select id="lote-especie">
+                <option>Trucha arcoíris</option>
+                <option>Carpa común</option>
+                <option>Tilapia</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="lote-proveedor">Proveedor</label>
+              <select id="lote-proveedor">
+                <option>Acuicultura Andina SRL</option>
+                <option>Piscigranjas Altiplano</option>
+                <option>Truchas del Sur Ltda.</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="lote-estanque">Estanque inicial</label>
+              <select id="lote-estanque">
+                <option>E-001 (pequeño)</option>
+                <option>E-101 (mediano)</option>
+                <option>E-205 (grande)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="lote-fecha">Fecha de siembra</label>
+              <input id="lote-fecha" type="date" />
+            </div>
+            <div class="field">
+              <label for="lote-cantidad">Cantidad de alevines</label>
+              <input id="lote-cantidad" type="number" min="0" placeholder="Ej. 3000" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar lote</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "editar")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Editar lote</div>
+          <div class="card-title">Actualizar información básica</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="editar-lote-codigo">Lote</label>
+              <select id="editar-lote-codigo">
+                <option>LOT-2026-001</option>
+                <option>LOT-2026-004</option>
+                <option>LOT-2025-023</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-lote-estanque">Estanque actual</label>
+              <select id="editar-lote-estanque">
+                <option>E-001</option>
+                <option>E-101</option>
+                <option>E-205</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-lote-cantidad">Cantidad actual de peces</label>
+              <input id="editar-lote-cantidad" type="number" min="0" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar cambios</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+  private string _tab = "lista";
+}

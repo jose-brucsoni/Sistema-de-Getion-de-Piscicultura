@@ -1,0 +1,145 @@
+<div class="section-container">
+  <div>
+    <div class="tabs">
+      <button type="button" class="tab-button @(_tab == "lista" ? "tab-button--active" : "")" @onclick='() => _tab = "lista"'>Lista</button>
+      <button type="button" class="tab-button @(_tab == "crear" ? "tab-button--active" : "")" @onclick='() => _tab = "crear"'>Crear</button>
+      <button type="button" class="tab-button @(_tab == "editar" ? "tab-button--active" : "")" @onclick='() => _tab = "editar"'>Editar</button>
+    </div>
+
+    @if (_tab == "lista")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Proveedores de alevines</div>
+          <div class="card-title">Listado actual</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Proveedor</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Contacto</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Teléfono</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Correo</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Certificación sanitaria</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Calificación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Acuicultura Andina SRL</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Luis Herrera</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">+591 700 11111</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">contacto@acuandina.bo</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Vigente hasta 12/2026</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">★★★★★</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Piscigranjas Altiplano</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Roxana Flores</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">+591 700 22222</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">ventas@altiplano.bo</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Vigente hasta 08/2027</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">★★★★☆</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;">Truchas del Sur Ltda.</td>
+                  <td style="padding:0.45rem 0.6rem;">Miguel Arce</td>
+                  <td style="padding:0.45rem 0.6rem;">+591 700 33333</td>
+                  <td style="padding:0.45rem 0.6rem;">info@truchasdelsur.bo</td>
+                  <td style="padding:0.45rem 0.6rem;">En revisión</td>
+                  <td style="padding:0.45rem 0.6rem;">★★★☆☆</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "crear")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Nuevo proveedor</div>
+          <div class="card-title">Registrar proveedor</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="nuevo-prov-nombre">Nombre del proveedor</label>
+              <input id="nuevo-prov-nombre" type="text" placeholder="Ej. Acuicultura Andina SRL" />
+            </div>
+            <div class="field">
+              <label for="nuevo-prov-contacto">Persona de contacto</label>
+              <input id="nuevo-prov-contacto" type="text" placeholder="Nombre y apellido" />
+            </div>
+            <div class="field">
+              <label for="nuevo-prov-telefono">Teléfono</label>
+              <input id="nuevo-prov-telefono" type="tel" placeholder="+591 700 00000" />
+            </div>
+            <div class="field">
+              <label for="nuevo-prov-correo">Correo</label>
+              <input id="nuevo-prov-correo" type="email" placeholder="correo@proveedor.bo" />
+            </div>
+            <div class="field">
+              <label for="nuevo-prov-cert">Certificación sanitaria</label>
+              <input id="nuevo-prov-cert" type="text" placeholder="Ej. Vigente hasta 12/2026" />
+            </div>
+            <div class="field">
+              <label for="nuevo-prov-calificacion">Calificación (1–5)</label>
+              <input id="nuevo-prov-calificacion" type="number" min="1" max="5" placeholder="5" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar proveedor</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "editar")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Editar proveedor</div>
+          <div class="card-title">Seleccionar proveedor</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="editar-prov-nombre">Proveedor</label>
+              <select id="editar-prov-nombre">
+                <option>Acuicultura Andina SRL</option>
+                <option>Piscigranjas Altiplano</option>
+                <option>Truchas del Sur Ltda.</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-prov-contacto">Persona de contacto</label>
+              <input id="editar-prov-contacto" type="text" placeholder="Nombre y apellido" />
+            </div>
+            <div class="field">
+              <label for="editar-prov-telefono">Teléfono</label>
+              <input id="editar-prov-telefono" type="tel" placeholder="+591 700 00000" />
+            </div>
+            <div class="field">
+              <label for="editar-prov-correo">Correo</label>
+              <input id="editar-prov-correo" type="email" placeholder="correo@proveedor.bo" />
+            </div>
+            <div class="field">
+              <label for="editar-prov-cert">Certificación sanitaria</label>
+              <input id="editar-prov-cert" type="text" placeholder="Ej. Vigente hasta 12/2026" />
+            </div>
+            <div class="field">
+              <label for="editar-prov-calificacion">Calificación (1–5)</label>
+              <input id="editar-prov-calificacion" type="number" min="1" max="5" placeholder="5" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar cambios</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+  private string _tab = "lista";
+}

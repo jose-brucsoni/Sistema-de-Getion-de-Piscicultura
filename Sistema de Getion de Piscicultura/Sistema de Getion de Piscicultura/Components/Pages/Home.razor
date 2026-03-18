@@ -1,4 +1,8 @@
 @page "/"
+@using Microsoft.AspNetCore.Components.Routing
+@rendermode InteractiveServer
+
+
 
 <PageTitle>Lagos Andinos SRL - Gestión de Piscicultura</PageTitle>
 
@@ -17,7 +21,7 @@
         <a href="#bienvenida">Inicio</a>
         <a href="#quienes-somos">Quiénes somos</a>
         <a href="#contacto">Contáctanos</a>
-        <a href="/inicio-de-sesion">Iniciar sesión</a>
+        <a style="color: #a7a7a7;" @onclick="Ir_A_Inicio_De_Sesion">Iniciar sesión</a>
       </div>
     </nav>
   </header>
@@ -232,3 +236,13 @@
     </div>
   </footer>
 </div>
+
+@code {
+  [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+  private void Ir_A_Inicio_De_Sesion()
+  {
+    NavigationManager.NavigateTo("/inicio-de-sesion");
+    StateHasChanged();
+  }
+}

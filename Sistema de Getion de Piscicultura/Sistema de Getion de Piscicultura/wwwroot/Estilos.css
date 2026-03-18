@@ -225,6 +225,7 @@ header {
 .nav-links a:hover {
   background: var(--baltic-blue);
   color: var(--white);
+  cursor: pointer;
 }
 
 .btn-login {

@@ -1,0 +1,210 @@
+<div class="section-container">
+  <div>
+    <div class="tabs">
+      <button type="button" class="tab-button @(_tab == "fases" ? "tab-button--active" : "")" @onclick='() => _tab = "fases"'>Fases activas</button>
+      <button type="button" class="tab-button @(_tab == "traslados" ? "tab-button--active" : "")" @onclick='() => _tab = "traslados"'>Traslados</button>
+      <button type="button" class="tab-button @(_tab == "mortalidad" ? "tab-button--active" : "")" @onclick='() => _tab = "mortalidad"'>Mortalidad</button>
+      <button type="button" class="tab-button @(_tab == "muestreos" ? "tab-button--active" : "")" @onclick='() => _tab = "muestreos"'>Muestreos</button>
+    </div>
+
+    @if (_tab == "fases")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Crianza</div>
+          <div class="card-title">Fases activas por lote</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Especie</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Fase actual</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estanque</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Días en fase</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Peso promedio (g)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-001</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Trucha arcoíris</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Fase 1 - Alevinaje</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-001</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">25</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">8</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-004</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carpa común</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Fase 2 - Juveniles</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-101</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">90</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">80</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;">LOT-2025-023</td>
+                  <td style="padding:0.45rem 0.6rem;">Tilapia</td>
+                  <td style="padding:0.45rem 0.6rem;">Fase 4 - Engorde final</td>
+                  <td style="padding:0.45rem 0.6rem;">E-205</td>
+                  <td style="padding:0.45rem 0.6rem;">320</td>
+                  <td style="padding:0.45rem 0.6rem;">320</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "traslados")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Traslado entre fases</div>
+          <div class="card-title">Registrar traslado</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="traslado-lote">Lote</label>
+              <select id="traslado-lote">
+                <option>LOT-2026-001</option>
+                <option>LOT-2026-004</option>
+                <option>LOT-2025-023</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="traslado-fase-actual">Fase actual</label>
+              <input id="traslado-fase-actual" type="text" placeholder="Se mostrará automáticamente" />
+            </div>
+            <div class="field">
+              <label for="traslado-fase-destino">Fase destino</label>
+              <select id="traslado-fase-destino">
+                <option>Fase 2 - Juveniles</option>
+                <option>Fase 3 - Pre-engorde</option>
+                <option>Fase 4 - Engorde final</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="traslado-estanque-destino">Estanque destino</label>
+              <select id="traslado-estanque-destino">
+                <option>E-101</option>
+                <option>E-205</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="traslado-cantidad">Cantidad trasladada</label>
+              <input id="traslado-cantidad" type="number" min="0" />
+            </div>
+            <div class="field">
+              <label for="traslado-mortalidad">Mortalidad en traslado</label>
+              <input id="traslado-mortalidad" type="number" min="0" />
+            </div>
+            <div class="field">
+              <label for="traslado-peso">Peso promedio (g)</label>
+              <input id="traslado-peso" type="number" min="0" step="0.1" />
+            </div>
+            <div class="field">
+              <label for="traslado-fecha">Fecha</label>
+              <input id="traslado-fecha" type="date" />
+            </div>
+            <div class="field">
+              <label for="traslado-hora">Hora</label>
+              <input id="traslado-hora" type="time" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Registrar traslado</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "mortalidad")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Mortalidad</div>
+          <div class="card-title">Registrar mortalidad por causa</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="mort-lote">Lote</label>
+              <select id="mort-lote">
+                <option>LOT-2026-001</option>
+                <option>LOT-2026-004</option>
+                <option>LOT-2025-023</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="mort-fecha">Fecha</label>
+              <input id="mort-fecha" type="date" />
+            </div>
+            <div class="field">
+              <label for="mort-cantidad">Cantidad de peces</label>
+              <input id="mort-cantidad" type="number" min="0" />
+            </div>
+            <div class="field">
+              <label for="mort-causa">Causa</label>
+              <select id="mort-causa">
+                <option>Enfermedad</option>
+                <option>Estrés</option>
+                <option>Depredadores</option>
+                <option>Contaminación</option>
+                <option>Otra</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="mort-observaciones">Observaciones</label>
+              <textarea id="mort-observaciones"></textarea>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Registrar mortalidad</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "muestreos")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Muestreo</div>
+          <div class="card-title">Registro de peso y talla</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="muestra-lote">Lote</label>
+              <select id="muestra-lote">
+                <option>LOT-2026-001</option>
+                <option>LOT-2026-004</option>
+                <option>LOT-2025-023</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="muestra-fecha">Fecha</label>
+              <input id="muestra-fecha" type="date" />
+            </div>
+            <div class="field">
+              <label for="muestra-cantidad">Cantidad de peces muestreados</label>
+              <input id="muestra-cantidad" type="number" min="1" />
+            </div>
+            <div class="field">
+              <label for="muestra-peso">Peso promedio (g)</label>
+              <input id="muestra-peso" type="number" min="0" step="0.1" />
+            </div>
+            <div class="field">
+              <label for="muestra-dispersion">Dispersión de pesos</label>
+              <input id="muestra-dispersion" type="text" placeholder="Ej. 280–340" />
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar muestreo</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+  private string _tab = "fases";
+}

@@ -1,0 +1,145 @@
+<div class="section-container">
+  <div>
+    <div class="tabs">
+      <button type="button" class="tab-button @(_tab == "lista" ? "tab-button--active" : "")" @onclick='() => _tab = "lista"'>Lista</button>
+      <button type="button" class="tab-button @(_tab == "crear" ? "tab-button--active" : "")" @onclick='() => _tab = "crear"'>Crear</button>
+      <button type="button" class="tab-button @(_tab == "editar" ? "tab-button--active" : "")" @onclick='() => _tab = "editar"'>Editar</button>
+    </div>
+
+    @if (_tab == "lista")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Especies configuradas</div>
+          <div class="card-title">Parámetros principales</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Especie</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Temp. óptima (°C)</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">pH óptimo</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Oxígeno mín. (mg/L)</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Peso comercial (g)</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Alimentación recomendada</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Trucha arcoíris</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">12 – 18</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">6.5 – 8.0</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">&gt; 6,0</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">250 – 400</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Alta proteína, fases 1–4 según curva</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carpa común</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">18 – 26</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">6.5 – 8.5</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">&gt; 5,0</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">300 – 450</td>
+                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Pienso de crecimiento y engorde</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.45rem 0.6rem;">Tilapia</td>
+                  <td style="padding:0.45rem 0.6rem;">24 – 30</td>
+                  <td style="padding:0.45rem 0.6rem;">6.0 – 8.5</td>
+                  <td style="padding:0.45rem 0.6rem;">&gt; 5,0</td>
+                  <td style="padding:0.45rem 0.6rem;">250 – 400</td>
+                  <td style="padding:0.45rem 0.6rem;">Alimento flotante por fases</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "crear")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Nueva especie</div>
+          <div class="card-title">Registrar especie</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="nueva-especie-nombre">Nombre de la especie</label>
+              <input id="nueva-especie-nombre" type="text" placeholder="Ej. Trucha arcoíris" />
+            </div>
+            <div class="field">
+              <label for="nueva-especie-temp">Temperatura óptima (°C)</label>
+              <input id="nueva-especie-temp" type="text" placeholder="Ej. 12 – 18" />
+            </div>
+            <div class="field">
+              <label for="nueva-especie-ph">pH óptimo</label>
+              <input id="nueva-especie-ph" type="text" placeholder="Ej. 6.5 – 8.0" />
+            </div>
+            <div class="field">
+              <label for="nueva-especie-oxigeno">Oxígeno mínimo (mg/L)</label>
+              <input id="nueva-especie-oxigeno" type="number" min="0" step="0.1" placeholder="Ej. 6.0" />
+            </div>
+            <div class="field">
+              <label for="nueva-especie-peso">Rango de peso comercial (g)</label>
+              <input id="nueva-especie-peso" type="text" placeholder="Ej. 250 – 400" />
+            </div>
+            <div class="field">
+              <label for="nueva-especie-alimentacion">Alimentación recomendada por fase</label>
+              <textarea id="nueva-especie-alimentacion" placeholder="Describir tipo de alimento para cada fase..."></textarea>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar especie</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "editar")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Editar especie</div>
+          <div class="card-title">Seleccionar especie</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="editar-especie">Especie</label>
+              <select id="editar-especie">
+                <option>Trucha arcoíris</option>
+                <option>Carpa común</option>
+                <option>Tilapia</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editar-especie-temp">Temperatura óptima (°C)</label>
+              <input id="editar-especie-temp" type="text" placeholder="Ej. 12 – 18" />
+            </div>
+            <div class="field">
+              <label for="editar-especie-ph">pH óptimo</label>
+              <input id="editar-especie-ph" type="text" placeholder="Ej. 6.5 – 8.0" />
+            </div>
+            <div class="field">
+              <label for="editar-especie-oxigeno">Oxígeno mínimo (mg/L)</label>
+              <input id="editar-especie-oxigeno" type="number" min="0" step="0.1" placeholder="Ej. 6.0" />
+            </div>
+            <div class="field">
+              <label for="editar-especie-peso">Rango de peso comercial (g)</label>
+              <input id="editar-especie-peso" type="text" placeholder="Ej. 250 – 400" />
+            </div>
+            <div class="field">
+              <label for="editar-especie-alimentacion">Alimentación recomendada por fase</label>
+              <textarea id="editar-especie-alimentacion" placeholder="Actualizar descripción de la alimentación..."></textarea>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button">Guardar cambios</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+  private string _tab = "lista";
+}

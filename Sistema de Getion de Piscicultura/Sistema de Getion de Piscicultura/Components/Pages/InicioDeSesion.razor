@@ -1,4 +1,6 @@
 @page "/inicio-de-sesion"
+@using Microsoft.AspNetCore.Components.Routing
+@rendermode InteractiveServer
 
 <PageTitle>Inicio de sesión · Sistema de Piscicultura</PageTitle>
 
@@ -9,7 +11,7 @@
     </div>
     <h1 class="section-title" id="login-title">Iniciar sesión</h1>
     <p class="login-subtitle">Accede al Panel de Gestión de Piscicultura.</p>
-    <form class="contact-form" id="login-form" novalidate>
+    <div class="contact-form">
       <div class="field">
         <label for="usuario">Usuario</label>
         <input id="usuario" name="usuario" type="text" autocomplete="username" placeholder="Ej. tecnico01" />
@@ -19,9 +21,17 @@
         <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Ingresa tu contraseña" />
       </div>
       <div class="field">
-        <button class="btn-login" type="submit">Entrar al sistema</button>
+        <button class="btn-login" type="button" @onclick="IrAlPrincipal">Entrar al sistema</button>
       </div>
-    </form>
+    </div>
   </div>
 </div>
 
+@code {
+  [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+  private void IrAlPrincipal()
+  {
+    NavigationManager.NavigateTo("/principal");
+  }
+}
