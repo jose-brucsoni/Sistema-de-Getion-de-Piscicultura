@@ -1,7 +1,234 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Lagos Andinos SRL - Gestión de Piscicultura</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="page">
+  <header>
+    <nav class="nav">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="/recursos/Iconos/PezSaltando.png" alt="Lagos Andinos - detalle de peces" />
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Lagos Andinos SRL</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#bienvenida">Inicio</a>
+        <a href="#quienes-somos">Quiénes somos</a>
+        <a href="#contacto">Contáctanos</a>
+        <a href="/inicio-de-sesion">Iniciar sesión</a>
+      </div>
+    </nav>
+  </header>
 
-Welcome to your new app.
+  <main>
+    <section id="bienvenida" aria-labelledby="hero-title" class="hero-section">
+      <div class="hero-bg">
+        <img id="hero-bg-image" src="/recursos/Imagenes/VistaPanoramicaDeLasLagunasDeCrianza.jpg" alt="Vista panorámica de las lagunas de crianza" />
+      </div>
+      <div class="hero-overlay" aria-hidden="true"></div>
+      <div class="hero">
+        <div class="hero-content">
+          <h1 id="hero-title" class="hero-title">
+            Bienvenido al sistema de <span>Gestión De Piscicultura</span> de <span>“Lagos Andinos”</span>.
+          </h1>
+          <p class="hero-subtitle" id="hero-subtitle">
+            Centraliza la trazabilidad de tus lotes, el monitoreo del agua y la alimentación diaria desde una
+            única plataforma híbrida pensada para la región andina.
+          </p>
+        </div>
+        <div class="hero-media" aria-label="Controles del carrusel">
+          <button type="button" class="btn-outline" data-hero-prev aria-label="Imagen anterior">&#10094;</button>
+          <button type="button" class="btn-outline" data-hero-next aria-label="Imagen siguiente">&#10095;</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="quienes-somos" aria-labelledby="quienes-title">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-kicker">Quiénes somos</div>
+          <h2 class="section-title" id="quienes-title">Tecnología pensada para piscicultores andinos</h2>
+          <p class="section-text">
+            Este sistema fue diseñado a partir de la realidad de “Lagos Andinos” SRL: una piscifactoría que
+            necesita tomar decisiones rápidas con información confiable, sin obligar al personal a entender
+            términos técnicos o complejas herramientas de software.
+          </p>
+        </div>
+        <div class="section-grid">
+          <article class="card">
+            <div class="card-label">Visión</div>
+            <div class="card-title">Una bitácora digital de cada lote</div>
+            <p class="card-text">
+              Para cada grupo de peces (lote) se guarda una “historia clínica”: dónde fue sembrado, en qué
+              estanques ha vivido, qué alimentación recibió, qué parámetros tenía el agua y cómo fue su cosecha.
+              Todo en un solo lugar y en un lenguaje sencillo.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-label">Enfoque</div>
+            <div class="card-title">Operaciones en tiempo real</div>
+            <p class="card-text">
+              Los técnicos registran datos directamente en los estanques usando un celular o tablet. Lo que ellos
+              anotan en campo se actualiza de inmediato en la base de datos de la empresa, para que el encargado
+              vea el mismo dato desde la oficina sin demoras ni cuadernos de por medio.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-label">Confianza</div>
+            <div class="card-title">Datos seguros y consistentes</div>
+            <p class="card-text">
+              La información de la producción se respalda y organiza de forma automática. Así se reducen errores
+              de escritura, se evitan hojas sueltas y se cuenta con un historial claro para auditorías, visitas
+              sanitarias o decisiones de inversión.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="como-funciona-title">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-kicker">Cómo funciona el sistema</div>
+          <h2 class="section-title" id="como-funciona-title">Del estanque al reporte en pocos pasos</h2>
+          <p class="section-text">
+            La idea es que cualquier persona del equipo, incluso sin formación en informática, entienda qué hace
+            el sistema y cómo le ayuda en su trabajo diario.
+          </p>
+        </div>
+        <div class="section-grid">
+          <article class="card">
+            <div class="card-label">1. Registro en campo</div>
+            <div class="card-title">Lo que ve el técnico</div>
+            <p class="card-text">
+              En el estanque, el técnico abre la aplicación, elige el estanque o lote y llena formularios muy
+              simples: cuántos peces sembró o cosechó, qué cantidad de alimento utilizó o qué valores tuvo el
+              agua (temperatura, pH, oxígeno, etc.).
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-label">2. Almacenamiento automático</div>
+            <div class="card-title">Lo que hace el sistema por detrás</div>
+            <p class="card-text">
+              Cada registro se guarda en una base de datos central. El sistema valida que los valores tengan
+              sentido (por ejemplo, que el estanque no supere su capacidad) y, si detecta algo extraño, marca el
+              dato para revisarlo.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-label">3. Alertas y resúmenes</div>
+            <div class="card-title">Lo que ve el supervisor</div>
+            <p class="card-text">
+              En la oficina, el supervisor entra a un panel donde puede ver resúmenes claros: lotes activos,
+              consumo de alimento, mortalidad, parámetros del agua fuera de rango y productividad por especie.
+              No necesita hacer cálculos a mano: el sistema los presenta listos para decidir.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="beneficios-title">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-kicker">Beneficios para la piscifactoría</div>
+          <h2 class="section-title" id="beneficios-title">Qué gana la empresa al usar este sistema</h2>
+          <p class="section-text">
+            Más allá de la tecnología, el objetivo es que productores, técnicos y supervisores trabajen con menos
+            estrés y más control sobre lo que ocurre en los estanques.
+          </p>
+        </div>
+        <div class="section-grid">
+          <article class="card">
+            <div class="card-label">Decisiones informadas</div>
+            <div class="card-title">Menos improvisación, más datos</div>
+            <p class="card-text">
+              En lugar de basarse solo en la experiencia o la memoria, el personal puede ver cómo se ha
+              comportado cada lote a lo largo del tiempo y ajustar la alimentación, tratamientos o cosechas según
+              resultados reales.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-label">Ahorro y control</div>
+            <div class="card-title">Mejor uso del alimento y los estanques</div>
+            <p class="card-text">
+              El sistema ayuda a evitar sobrecargar estanques, desperdiciar alimento o perder peces por no
+              detectar a tiempo cambios en el agua, lo que se traduce en menos pérdidas y mejor rendimiento.
+            </p>
+          </article>
+          <article class="card">
+            <div class="card-label">Transparencia</div>
+            <div class="card-title">Información clara para terceros</div>
+            <p class="card-text">
+              Ante clientes, auditores o entidades sanitarias, la empresa puede mostrar con claridad qué se hizo,
+              cuándo y cómo se controlaron los parámetros clave, fortaleciendo la confianza en su producto.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto" aria-labelledby="contacto-title">
+      <div class="section-container contact-layout">
+        <div>
+          <div class="section-kicker">Contáctanos</div>
+          <h2 class="section-title" id="contacto-title">¿Te gustaría implementar este sistema en tu piscifactoría?</h2>
+          <p class="section-text" style="margin-bottom: 1.3rem;">
+            Déjanos tus datos y un responsable técnico podrá adaptar la solución del caso “Lagos Andinos” a las
+            particularidades de tu operación.
+          </p>
+          <form class="contact-form" id="contact-form" novalidate>
+            <div class="field">
+              <label for="nombre">Nombre completo</label>
+              <input id="nombre" name="nombre" type="text" autocomplete="name" placeholder="Ej. Ana Pérez" />
+            </div>
+            <div class="field">
+              <label for="correo">Correo electrónico</label>
+              <input id="correo" name="correo" type="email" autocomplete="email" placeholder="nombre@empresa.com" />
+            </div>
+            <div class="field">
+              <label for="mensaje">Mensaje</label>
+              <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos brevemente sobre tu proyecto de piscicultura."></textarea>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="submit">Enviar consulta</button>
+            </div>
+          </form>
+        </div>
+        <div class="contact-meta">
+          <div>
+            <span class="contact-pill">Caso de estudio: “Lagos Andinos” SRL</span>
+          </div>
+          <div>
+            <div class="contact-item-title">Soporte para decisiones diarias</div>
+            <p>
+              Dashboards, alertas por parámetros críticos del agua y seguimiento de alimentación diaria para
+              reaccionar antes de que un problema se convierta en pérdida de producción.
+            </p>
+          </div>
+          <div>
+            <div class="contact-item-title">Operación en campo y oficina</div>
+            <p>
+              Técnicos registran datos en los estanques desde dispositivos móviles; supervisores analizan la
+              información consolidada desde la oficina o el escritorio.
+            </p>
+          </div>
+          <div>
+            <img src="/recursos/Imagenes/VistaDeTrabajadorRecolectandoLosPesces.jpg" alt="Trabajador recolectando peces en campo" style="width:100%;border-radius:18px;box-shadow:0 20px 45px rgba(15,23,42,0.45);object-fit:cover;" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>© <span id="year"></span> Lagos Andinos SRL · Sistema de Gestión de Piscicultura.</span>
+      <div class="footer-links">
+        <span>Blazor Hybrid · ASP.NET Core · SQL Server</span>
+      </div>
+    </div>
+  </footer>
+</div>
