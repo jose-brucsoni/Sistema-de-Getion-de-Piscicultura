@@ -9,6 +9,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddScoped<Lotes_Service>();
+builder.Services.AddScoped<AlimentacionInventario_Service>();
+builder.Services.AddScoped<Inventario_Service>();
 
 var app = builder.Build();
 

@@ -1,0 +1,166 @@
+@using Sistema_de_Getion_de_Piscicultura.Modelos
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Inventario_Service InventarioService
+
+<div class="section-container">
+    <div class="section-header">
+        <div class="section-kicker">Configuración</div>
+        <h1 class="section-title">Inventario</h1>
+        <p class="section-text">Gestión de insumos y alimentos: crear ítems y agregar stock.</p>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(_mensaje))
+    {
+        <div style="@EstiloMensaje">@_mensaje</div>
+    }
+
+    <div class="inventario-layout">
+        <div class="inventario-top-grid">
+            <article class="card inventario-card">
+            <div class="card-label">Nuevo insumo</div>
+            <div class="card-title">Agregar ítem al inventario</div>
+            <form class="contact-form">
+                <div class="field">
+                    <label for="inv-nombre">Nombre</label>
+                    <input id="inv-nombre" type="text" @bind="_nuevoNombre" />
+                </div>
+                <div class="field">
+                    <label for="inv-categoria">Categoría</label>
+                    <input id="inv-categoria" type="text" @bind="_nuevaCategoria" placeholder="Ej. Alimento" />
+                </div>
+                <div class="field">
+                    <label for="inv-stock-inicial">Stock inicial (kg)</label>
+                    <input id="inv-stock-inicial" type="number" min="0" step="0.01" @bind="_nuevoStockInicial" />
+                </div>
+                <div class="field">
+                    <label for="inv-stock-minimo">Stock mínimo (kg)</label>
+                    <input id="inv-stock-minimo" type="number" min="0" step="0.01" @bind="_nuevoStockMinimo" />
+                </div>
+                <div class="field">
+                    <button class="btn-login" type="button" @onclick="CrearItem">Crear ítem</button>
+                </div>
+            </form>
+            </article>
+
+            <article class="card inventario-card">
+            <div class="card-label">Agregar stock</div>
+            <div class="card-title">Entrada a bodega</div>
+            <form class="contact-form">
+                <div class="field">
+                    <label for="inv-item">Ítem</label>
+                    <select id="inv-item" @bind="_itemIdSeleccionado">
+                        @foreach (var item in _items)
+                        {
+                            <option value="@item.Id">@item.Nombre</option>
+                        }
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="inv-cantidad">Cantidad a ingresar (kg)</label>
+                    <input id="inv-cantidad" type="number" min="0.01" step="0.01" @bind="_cantidadAgregar" />
+                </div>
+                <div class="field">
+                    <button class="btn-login" type="button" @onclick="AgregarStock">Agregar stock</button>
+                </div>
+            </form>
+            </article>
+        </div>
+
+        <article class="card inventario-card inventario-card-full">
+            <div class="card-label">Inventario actual</div>
+            <div class="card-title">Resumen de stock</div>
+            <div class="inventario-tabla-wrap">
+                <table class="inventario-tabla">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Stock</th>
+                            <th>Stock mínimo</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in _items)
+                        {
+                            <tr>
+                                <td>@item.Nombre</td>
+                                <td>@item.Categoria</td>
+                                <td>@item.StockKg kg</td>
+                                <td>@item.StockMinimoKg kg</td>
+                                <td>
+                                    @(item.StockKg <= item.StockMinimoKg ? "Reabastecer" : "Disponible")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </div>
+</div>
+
+@code {
+    private List<InventarioItem> _items = new();
+    private string _mensaje = string.Empty;
+    private bool _esError;
+    private string _nuevoNombre = string.Empty;
+    private string _nuevaCategoria = "Alimento";
+    private decimal _nuevoStockInicial;
+    private decimal _nuevoStockMinimo;
+    private int _itemIdSeleccionado;
+    private decimal _cantidadAgregar = 1m;
+
+    protected override void OnInitialized()
+    {
+        Refrescar();
+    }
+
+    private void CrearItem()
+    {
+        var resultado = InventarioService.AgregarNuevoItem(_nuevoNombre, _nuevaCategoria, _nuevoStockInicial, _nuevoStockMinimo);
+        MostrarMensaje(resultado.mensaje, !resultado.exito);
+        if (!resultado.exito)
+        {
+            return;
+        }
+
+        _nuevoNombre = string.Empty;
+        _nuevoStockInicial = 0;
+        _nuevoStockMinimo = 0;
+        Refrescar();
+    }
+
+    private void AgregarStock()
+    {
+        var resultado = InventarioService.AgregarStock(_itemIdSeleccionado, _cantidadAgregar);
+        MostrarMensaje(resultado.mensaje, !resultado.exito);
+        if (!resultado.exito)
+        {
+            return;
+        }
+
+        _cantidadAgregar = 1m;
+        Refrescar();
+    }
+
+    private void Refrescar()
+    {
+        _items = InventarioService.ObtenerTodos();
+        if (_items.Count > 0)
+        {
+            _itemIdSeleccionado = _items[0].Id;
+        }
+    }
+
+    private void MostrarMensaje(string mensaje, bool esError)
+    {
+        _mensaje = mensaje;
+        _esError = esError;
+    }
+
+    private string EstiloMensaje
+        => _esError
+            ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+            : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
+}

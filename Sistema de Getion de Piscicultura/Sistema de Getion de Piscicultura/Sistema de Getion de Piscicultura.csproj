@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Content\" />
     <Folder Include="Modelos\" />
     <Folder Include="BaseDeDatos\" />
     <Folder Include="Servicios\" />

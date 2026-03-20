@@ -29,6 +29,7 @@
       <div>
         <div class="sidebar-nav-section">Monitoreo</div>
         <a class="sidebar-link @(_currentView == "seguimiento-alimentacion-e-inventario" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("seguimiento-alimentacion-e-inventario")' @onclick:preventDefault>Seguimiento de alimentación e inventario</a>
+        <a class="sidebar-link @(_currentView == "inventario" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("inventario")' @onclick:preventDefault>Inventario</a>
         <a class="sidebar-link @(_currentView == "parametros-agua" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("parametros-agua")' @onclick:preventDefault>Parámetros del agua</a>
         <a class="sidebar-link @(_currentView == "alimentacion" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("alimentacion")' @onclick:preventDefault>Alimentación</a>
       </div>
@@ -110,6 +111,10 @@
         else if (_currentView == "seguimiento-alimentacion-e-inventario")
         {
           <SeguimientoAlimentacionInventarioContent />
+        }
+        else if (_currentView == "inventario")
+        {
+          <InventarioContent />
         }
         else if (_currentView == "parametros-agua")
         {

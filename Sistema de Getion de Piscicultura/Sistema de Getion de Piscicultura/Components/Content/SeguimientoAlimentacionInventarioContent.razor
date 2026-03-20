@@ -1,30 +1,178 @@
+@using Sistema_de_Getion_de_Piscicultura.Modelos
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Lotes_Service LotesService
+@inject AlimentacionInventario_Service AlimentacionService
+
 <div class="section-container">
   <div class="section-header">
     <div class="section-kicker">Monitoreo</div>
     <h1 class="section-title">Seguimiento de alimentación e inventario</h1>
     <p class="section-text">
-      Vista combinada para revisar, de un vistazo, cuánto se ha alimentado cada estanque en el día y cómo va el
-      stock de alimentos en bodega.
+      Registro diario de alimentación por lote, control de frecuencia según fase y actualización automática del stock.
     </p>
   </div>
-  <div class="section-grid">
-    <article class="card">
+
+  @if (!string.IsNullOrWhiteSpace(_mensaje))
+  {
+    <div style="@EstiloMensaje" class="seguimiento-alerta">@_mensaje</div>
+  }
+
+  <div class="seguimiento-layout">
+    <div class="seguimiento-top-grid">
+      <article class="card seguimiento-card">
+      <div class="card-label">Registrar alimentación</div>
+      <div class="card-title">Control diario por lote</div>
+      <form class="contact-form">
+        <div class="field">
+          <label for="lote">Lote</label>
+          <select id="lote" @bind="_loteId">
+            @foreach (var lote in _lotes)
+            {
+              <option value="@lote.Id">@lote.Codigo</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label for="fecha">Fecha</label>
+          <input id="fecha" type="date" @bind="_fechaRegistro" />
+        </div>
+        <div class="field">
+          <label for="hora">Hora</label>
+          <input id="hora" type="time" @bind="_horaRegistro" />
+        </div>
+        <div class="field">
+          <label for="alimento">Tipo de alimento</label>
+          <select id="alimento" @bind="_alimentoId">
+            @foreach (var alimento in _inventario)
+            {
+              <option value="@alimento.Id">@alimento.Nombre (@alimento.StockKg kg)</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label for="cantidad">Cantidad (kg)</label>
+          <input id="cantidad" type="number" min="0.01" step="0.01" @bind="_cantidadKg" />
+        </div>
+        <div class="field">
+          <button class="btn-login" type="button" @onclick="Registrar">Registrar alimentación</button>
+        </div>
+      </form>
+      </article>
+
+      <article class="card seguimiento-card">
       <div class="card-label">Consumo por estanque (hoy)</div>
       <div class="card-title">Alimentación diaria</div>
-      <ul style="list-style:none;padding-left:0;font-size:0.9rem;color:#4b5563;">
-        <li>E-001 · 37.5 kg · Lote LOT-2026-001</li>
-        <li>E-101 · 54.0 kg · Lote LOT-2026-004</li>
-        <li>E-205 · 25.0 kg · Lote LOT-2025-023</li>
+      <ul class="seguimiento-lista-consumo">
+        @if (_consumoHoy.Count == 0)
+        {
+          <li>Sin registros de alimentación para hoy.</li>
+        }
+        else
+        {
+          @foreach (var item in _consumoHoy)
+          {
+            <li>@ObtenerNombreEstanque(item.EstanqueId) · @item.CantidadKg kg · Lote @item.CodigoLote</li>
+          }
+        }
       </ul>
-    </article>
-    <article class="card">
+      </article>
+    </div>
+
+    <article class="card seguimiento-card seguimiento-card-full">
       <div class="card-label">Inventario en bodega</div>
-      <div class="card-title">Stock estimado</div>
-      <ul style="list-style:none;padding-left:0;font-size:0.9rem;color:#4b5563;">
-        <li>Micro-granulado Fase 1 · 420 kg</li>
-        <li>Pellets juveniles Fase 2 · 780 kg</li>
-        <li>Concentrado engorde Fase 3-4 · 1.050 kg</li>
-      </ul>
+      <div class="card-title">Stock actual de alimentos</div>
+      <div class="seguimiento-tabla-wrap">
+        <table class="seguimiento-tabla">
+          <thead>
+            <tr>
+              <th>Alimento</th>
+              <th>Fase</th>
+              <th>Stock</th>
+              <th>Stock mínimo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var item in _inventario)
+            {
+              <tr>
+                <td>@item.Nombre</td>
+                <td>@item.TipoFase</td>
+                <td>@item.StockKg kg</td>
+                <td>@item.StockMinimoKg kg</td>
+                <td>
+                  @(item.StockKg <= item.StockMinimoKg ? "Reabastecer" : "Disponible")
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </article>
   </div>
 </div>
+
+@code {
+  private List<Lote> _lotes = new();
+  private List<AlimentoInventario> _inventario = new();
+  private List<ConsumoEstanqueDto> _consumoHoy = new();
+  private int _loteId;
+  private int _alimentoId;
+  private DateTime _fechaRegistro = DateTime.Today;
+  private TimeOnly _horaRegistro = new(8, 0);
+  private decimal _cantidadKg = 1m;
+  private string _mensaje = string.Empty;
+  private bool _esError;
+
+  protected override void OnInitialized()
+  {
+    _lotes = LotesService.ObtenerActivos();
+    _inventario = AlimentacionService.ObtenerInventario().ToList();
+    _consumoHoy = AlimentacionService.ObtenerConsumoPorEstanque(DateTime.Today).ToList();
+
+    if (_lotes.Count > 0)
+    {
+      _loteId = _lotes[0].Id;
+    }
+
+    if (_inventario.Count > 0)
+    {
+      _alimentoId = _inventario[0].Id;
+    }
+  }
+
+  private void Registrar()
+  {
+    var resultado = AlimentacionService.RegistrarAlimentacion(_loteId, _fechaRegistro, _horaRegistro.ToTimeSpan(), _alimentoId, _cantidadKg);
+    MostrarMensaje(resultado.mensaje, !resultado.exito);
+    if (!resultado.exito)
+    {
+      return;
+    }
+
+    _inventario = AlimentacionService.ObtenerInventario().ToList();
+    _consumoHoy = AlimentacionService.ObtenerConsumoPorEstanque(DateTime.Today).ToList();
+    _cantidadKg = 1m;
+    _horaRegistro = new TimeOnly(8, 0);
+  }
+
+  private void MostrarMensaje(string mensaje, bool esError)
+  {
+    _mensaje = mensaje;
+    _esError = esError;
+  }
+
+  private string EstiloMensaje
+      => _esError
+          ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+          : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
+
+  private static string ObtenerNombreEstanque(int id)
+      => id switch
+      {
+        1 => "E-001",
+        2 => "E-101",
+        3 => "E-205",
+        _ => $"E-{id:000}"
+      };
+}
