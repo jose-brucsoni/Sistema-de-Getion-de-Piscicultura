@@ -1,5 +1,6 @@
 @page "/principal"
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 
 <PageTitle>Panel principal · Sistema de Piscicultura</PageTitle>
 
@@ -93,6 +94,30 @@
                 <div class="card-title">Parámetros dentro de rango</div>
                 <div id="chart-parametros" style="min-height:280px;"></div>
               </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Sanidad</div>
+                <div class="card-title">Tasa de mortalidad por semana (%)</div>
+                <div id="chart-mortalidad" style="min-height:260px;"></div>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Eficiencia alimenticia</div>
+                <div class="card-title">FCR por lote (menor es mejor)</div>
+                <div id="chart-fcr" style="min-height:260px;"></div>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Cosecha proyectada</div>
+                <div class="card-title">Kg estimados por mes</div>
+                <div id="chart-cosecha-proyectada" style="min-height:260px;"></div>
+              </article>
+
+              <article class="card" style="grid-column:1 / -1;">
+                <div class="card-label">Infraestructura</div>
+                <div class="card-title">Ocupación de estanques (%)</div>
+                <div id="chart-ocupacion-estanques" style="min-height:300px;"></div>
+              </article>
             </div>
           </div>
         }
@@ -147,9 +172,25 @@
 
 @code {
   private string _currentView = "dashboard";
+  private bool _renderChartsPending = true;
 
-  private void SelectView(string view)
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (_currentView == "dashboard" && _renderChartsPending)
+    {
+      _renderChartsPending = false;
+      await JS.InvokeVoidAsync("dashboardChartsInit");
+    }
+  }
+
+  private async Task SelectView(string view)
   {
     _currentView = view;
+
+    if (view == "dashboard")
+    {
+      _renderChartsPending = true;
+      await InvokeAsync(StateHasChanged);
+    }
   }
 }

@@ -1,4 +1,13 @@
 (function () {
+  var dashboardCharts = {
+    biomasa: null,
+    consumo: null,
+    parametros: null,
+    mortalidad: null,
+    fcr: null,
+    cosechaProyectada: null,
+    ocupacionEstanques: null
+  };
   var heroSlides = [
     {
       image: "recursos/Imagenes/VistaPanoramicaDeLasLagunasDeCrianza.jpg",
@@ -164,6 +173,39 @@
     var biomasaEl = document.getElementById("chart-biomasa");
     var consumoEl = document.getElementById("chart-consumo");
     var parametrosEl = document.getElementById("chart-parametros");
+    var mortalidadEl = document.getElementById("chart-mortalidad");
+    var fcrEl = document.getElementById("chart-fcr");
+    var cosechaProyectadaEl = document.getElementById("chart-cosecha-proyectada");
+    var ocupacionEstanquesEl = document.getElementById("chart-ocupacion-estanques");
+
+    if (dashboardCharts.biomasa) {
+      dashboardCharts.biomasa.destroy();
+      dashboardCharts.biomasa = null;
+    }
+    if (dashboardCharts.consumo) {
+      dashboardCharts.consumo.destroy();
+      dashboardCharts.consumo = null;
+    }
+    if (dashboardCharts.parametros) {
+      dashboardCharts.parametros.destroy();
+      dashboardCharts.parametros = null;
+    }
+    if (dashboardCharts.mortalidad) {
+      dashboardCharts.mortalidad.destroy();
+      dashboardCharts.mortalidad = null;
+    }
+    if (dashboardCharts.fcr) {
+      dashboardCharts.fcr.destroy();
+      dashboardCharts.fcr = null;
+    }
+    if (dashboardCharts.cosechaProyectada) {
+      dashboardCharts.cosechaProyectada.destroy();
+      dashboardCharts.cosechaProyectada = null;
+    }
+    if (dashboardCharts.ocupacionEstanques) {
+      dashboardCharts.ocupacionEstanques.destroy();
+      dashboardCharts.ocupacionEstanques = null;
+    }
 
     if (biomasaEl) {
       var biomasaOptions = {
@@ -193,8 +235,8 @@
           }
         }
       };
-      var biomasaChart = new ApexCharts(biomasaEl, biomasaOptions);
-      biomasaChart.render();
+      dashboardCharts.biomasa = new ApexCharts(biomasaEl, biomasaOptions);
+      dashboardCharts.biomasa.render();
     }
 
     if (consumoEl) {
@@ -237,8 +279,8 @@
           labels: { colors: "#4b5563" }
         }
       };
-      var consumoChart = new ApexCharts(consumoEl, consumoOptions);
-      consumoChart.render();
+      dashboardCharts.consumo = new ApexCharts(consumoEl, consumoOptions);
+      dashboardCharts.consumo.render();
     }
 
     if (parametrosEl) {
@@ -277,8 +319,167 @@
           show: false
         }
       };
-      var parametrosChart = new ApexCharts(parametrosEl, parametrosOptions);
-      parametrosChart.render();
+      dashboardCharts.parametros = new ApexCharts(parametrosEl, parametrosOptions);
+      dashboardCharts.parametros.render();
+    }
+
+    if (mortalidadEl) {
+      var mortalidadOptions = {
+        chart: {
+          type: "area",
+          height: 260,
+          toolbar: { show: false }
+        },
+        series: [
+          {
+            name: "Mortalidad (%)",
+            data: [1.8, 1.5, 1.3, 1.1, 1.4, 1.0, 0.9, 0.8]
+          }
+        ],
+        xaxis: {
+          categories: ["Sem 1", "Sem 2", "Sem 3", "Sem 4", "Sem 5", "Sem 6", "Sem 7", "Sem 8"]
+        },
+        colors: ["#d8253c"],
+        stroke: { curve: "smooth", width: 3 },
+        dataLabels: { enabled: false },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.35,
+            opacityTo: 0.05,
+            stops: [0, 90, 100]
+          }
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val.toFixed(1) + "%";
+            }
+          }
+        }
+      };
+      dashboardCharts.mortalidad = new ApexCharts(mortalidadEl, mortalidadOptions);
+      dashboardCharts.mortalidad.render();
+    }
+
+    if (fcrEl) {
+      var fcrOptions = {
+        chart: {
+          type: "bar",
+          height: 260,
+          toolbar: { show: false }
+        },
+        series: [
+          {
+            name: "FCR",
+            data: [1.45, 1.38, 1.52, 1.41, 1.36]
+          }
+        ],
+        xaxis: {
+          categories: ["Lote T-01", "Lote T-02", "Lote C-01", "Lote Ti-01", "Lote Ti-02"]
+        },
+        yaxis: {
+          min: 1.2,
+          max: 1.7,
+          tickAmount: 5
+        },
+        colors: ["#639fab"],
+        plotOptions: {
+          bar: {
+            borderRadius: 4,
+            columnWidth: "45%"
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return val.toFixed(2);
+          }
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val.toFixed(2) + " kg/kg";
+            }
+          }
+        }
+      };
+      dashboardCharts.fcr = new ApexCharts(fcrEl, fcrOptions);
+      dashboardCharts.fcr.render();
+    }
+
+    if (cosechaProyectadaEl) {
+      var cosechaProyectadaOptions = {
+        chart: {
+          type: "line",
+          height: 260,
+          toolbar: { show: false }
+        },
+        series: [
+          {
+            name: "Proyección (kg)",
+            data: [780, 920, 1060, 1180, 1240, 1310]
+          },
+          {
+            name: "Meta (kg)",
+            data: [800, 900, 1000, 1100, 1200, 1300]
+          }
+        ],
+        xaxis: {
+          categories: ["Abr", "May", "Jun", "Jul", "Ago", "Sep"]
+        },
+        colors: ["#1c5d99", "#f59e0b"],
+        stroke: { curve: "smooth", width: [3, 2], dashArray: [0, 6] },
+        markers: { size: 4 },
+        dataLabels: { enabled: false },
+        legend: { position: "top" },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return Math.round(val) + " kg";
+            }
+          }
+        }
+      };
+      dashboardCharts.cosechaProyectada = new ApexCharts(cosechaProyectadaEl, cosechaProyectadaOptions);
+      dashboardCharts.cosechaProyectada.render();
+    }
+
+    if (ocupacionEstanquesEl) {
+      var ocupacionEstanquesOptions = {
+        chart: {
+          type: "radar",
+          height: 300,
+          toolbar: { show: false }
+        },
+        series: [
+          {
+            name: "Ocupación (%)",
+            data: [84, 72, 91, 68, 76, 88]
+          }
+        ],
+        labels: ["Estanque 1", "Estanque 2", "Estanque 3", "Estanque 4", "Estanque 5", "Estanque 6"],
+        colors: ["#1c5d99"],
+        markers: { size: 4 },
+        yaxis: {
+          min: 0,
+          max: 100,
+          tickAmount: 5
+        },
+        fill: {
+          opacity: 0.25
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + "% de ocupación";
+            }
+          }
+        }
+      };
+      dashboardCharts.ocupacionEstanques = new ApexCharts(ocupacionEstanquesEl, ocupacionEstanquesOptions);
+      dashboardCharts.ocupacionEstanques.render();
     }
   }
 
@@ -579,7 +780,9 @@
     setActive("lista");
   }
 
-  // Inicialización del dashboard (solo se ejecuta si existen los contenedores de gráficos)
+  window.dashboardChartsInit = initDashboardCharts;
+
+  // Inicialización inicial del dashboard (si ya están los contenedores en pantalla)
   initDashboardCharts();
 })();
 
