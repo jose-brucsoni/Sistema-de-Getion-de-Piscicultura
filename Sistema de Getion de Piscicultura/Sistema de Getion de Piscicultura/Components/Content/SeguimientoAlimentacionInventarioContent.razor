@@ -17,70 +17,191 @@
     <div style="@EstiloMensaje" class="seguimiento-alerta">@_mensaje</div>
   }
 
+  <div class="tabs">
+    <button type="button" class="tab-button @(_tab == "registrar" ? "tab-button--active" : "")" @onclick='() => _tab = "registrar"'>Registrar alimentación</button>
+    <button type="button" class="tab-button @(_tab == "hoy" ? "tab-button--active" : "")" @onclick='() => _tab = "hoy"'>Consumo por estanque (hoy)</button>
+    <button type="button" class="tab-button @(_tab == "rango" ? "tab-button--active" : "")" @onclick='() => _tab = "rango"'>Consumo por estanque (Rango de Fechas)</button>
+    <button type="button" class="tab-button @(_tab == "inventario" ? "tab-button--active" : "")" @onclick='() => _tab = "inventario"'>Inventario en bodega</button>
+  </div>
+
   <div class="seguimiento-layout">
-    <div class="seguimiento-top-grid">
+    @if (_tab == "registrar")
+    {
+      <div class="seguimiento-resumen">
+        <div class="seguimiento-resumen-item">
+          <span class="seguimiento-resumen-label">Total kg hoy</span>
+          <strong class="seguimiento-resumen-value">@_totalKgHoy kg</strong>
+        </div>
+        <div class="seguimiento-resumen-item">
+          <span class="seguimiento-resumen-label">Total kg rango</span>
+          <strong class="seguimiento-resumen-value">@_totalKgRango kg</strong>
+        </div>
+        <div class="seguimiento-resumen-item">
+          <span class="seguimiento-resumen-label">Insumos críticos</span>
+          <strong class="seguimiento-resumen-value">@_insumosCriticos</strong>
+        </div>
+      </div>
+      <div class="seguimiento-registrar-wrap">
       <article class="card seguimiento-card">
-      <div class="card-label">Registrar alimentación</div>
-      <div class="card-title">Control diario por lote</div>
-      <form class="contact-form">
-        <div class="field">
-          <label for="lote">Lote</label>
-          <select id="lote" @bind="_loteId">
-            @foreach (var lote in _lotes)
-            {
-              <option value="@lote.Id">@lote.Codigo</option>
-            }
-          </select>
-        </div>
-        <div class="field">
-          <label for="fecha">Fecha</label>
-          <input id="fecha" type="date" @bind="_fechaRegistro" />
-        </div>
-        <div class="field">
-          <label for="hora">Hora</label>
-          <input id="hora" type="time" @bind="_horaRegistro" />
-        </div>
-        <div class="field">
-          <label for="alimento">Tipo de alimento</label>
-          <select id="alimento" @bind="_alimentoId">
-            @foreach (var alimento in _inventario)
-            {
-              <option value="@alimento.Id">@alimento.Nombre (@alimento.StockKg kg)</option>
-            }
-          </select>
-        </div>
-        <div class="field">
-          <label for="cantidad">Cantidad (kg)</label>
-          <input id="cantidad" type="number" min="0.01" step="0.01" @bind="_cantidadKg" />
-        </div>
-        <div class="field">
-          <button class="btn-login" type="button" @onclick="Registrar">Registrar alimentación</button>
-        </div>
-      </form>
+        <div class="card-label">Registrar alimentación</div>
+        <div class="card-title">Control diario por lote</div>
+        <form class="contact-form">
+          <div class="field">
+            <label for="lote">Lote</label>
+            <select id="lote" @bind="_loteId">
+              @foreach (var lote in _lotes)
+              {
+                <option value="@lote.Id">@lote.Codigo</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="fecha">Fecha</label>
+            <input id="fecha" type="date" @bind="_fechaRegistro" />
+          </div>
+          <div class="field">
+            <label for="hora">Hora</label>
+            <input id="hora" type="time" @bind="_horaRegistro" />
+          </div>
+          <div class="field">
+            <label for="alimento">Tipo de alimento</label>
+            <select id="alimento" @bind="_alimentoId">
+              @foreach (var alimento in _inventario)
+              {
+                <option value="@alimento.Id">@alimento.Nombre (@alimento.StockKg kg)</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="cantidad">Cantidad (kg)</label>
+            <input id="cantidad" type="number" min="0.01" step="0.01" @bind="_cantidadKg" />
+          </div>
+          <div class="field">
+            <button class="btn-login" type="button" @onclick="Registrar">Registrar alimentación</button>
+          </div>
+        </form>
       </article>
+      </div>
+    }
 
+    @if (_tab == "hoy")
+    {
       <article class="card seguimiento-card">
-      <div class="card-label">Consumo por estanque (hoy)</div>
-      <div class="card-title">Alimentación diaria</div>
-      <ul class="seguimiento-lista-consumo">
-        @if (_consumoHoy.Count == 0)
-        {
-          <li>Sin registros de alimentación para hoy.</li>
-        }
-        else
-        {
-          @foreach (var item in _consumoHoy)
+        <div class="card-label">Consumo por estanque (hoy)</div>
+        <div class="card-title">Alimentación diaria</div>
+        <div class="seguimiento-resumen">
+          <div class="seguimiento-resumen-item">
+            <span class="seguimiento-resumen-label">Total kg del día</span>
+            <strong class="seguimiento-resumen-value">@_totalKgHoy kg</strong>
+          </div>
+          <div class="seguimiento-resumen-item">
+            <span class="seguimiento-resumen-label">Estanques con consumo</span>
+            <strong class="seguimiento-resumen-value">@_consumoHoy.Count</strong>
+          </div>
+        </div>
+        <ul class="seguimiento-lista-consumo">
+          @if (_consumoHoy.Count == 0)
           {
-            <li>@ObtenerNombreEstanque(item.EstanqueId) · @item.CantidadKg kg · Lote @item.CodigoLote</li>
+            <li class="seguimiento-lista-consumo-empty">Sin registros de alimentación para hoy.</li>
           }
-        }
-      </ul>
+          else
+          {
+            @foreach (var grupo in AgruparConsumoPorTipo(_consumoHoy))
+            {
+              <li class="seguimiento-lista-tipo">
+                <div class="seguimiento-lista-tipo-titulo">@grupo.Key</div>
+                <ul class="seguimiento-lista-consumo-sublista">
+                  @foreach (var item in grupo)
+                  {
+                    <li class="seguimiento-lista-consumo-item">
+                      <div class="seguimiento-consumo-principal">
+                        <span class="seguimiento-consumo-estanque">@ObtenerNombreEstanque(item.EstanqueId)</span>
+                        <span class="seguimiento-consumo-cantidad">@item.CantidadKg kg</span>
+                      </div>
+                      <div class="seguimiento-consumo-secundario">Lote @item.CodigoLote</div>
+                    </li>
+                  }
+                </ul>
+              </li>
+            }
+          }
+        </ul>
       </article>
-    </div>
+    }
 
+    @if (_tab == "rango")
+    {
+      <article class="card seguimiento-card">
+        <div class="card-label">Consumo por estanque (rango)</div>
+        <div class="card-title">Consulta por fechas</div>
+        <form class="contact-form">
+          <div class="field">
+            <label for="rango-inicio">Fecha inicio</label>
+            <input id="rango-inicio" type="date" @bind="_fechaInicioRango" />
+          </div>
+          <div class="field">
+            <label for="rango-fin">Fecha fin</label>
+            <input id="rango-fin" type="date" @bind="_fechaFinRango" />
+          </div>
+          <div class="field">
+            <button class="btn-login" type="button" @onclick="CargarConsumoRango">Consultar rango</button>
+          </div>
+        </form>
+        <div class="seguimiento-resumen">
+          <div class="seguimiento-resumen-item">
+            <span class="seguimiento-resumen-label">Total kg del rango</span>
+            <strong class="seguimiento-resumen-value">@_totalKgRango kg</strong>
+          </div>
+          <div class="seguimiento-resumen-item">
+            <span class="seguimiento-resumen-label">Estanques con consumo</span>
+            <strong class="seguimiento-resumen-value">@_consumoRango.Count</strong>
+          </div>
+        </div>
+        <ul class="seguimiento-lista-consumo">
+          @if (_consumoRango.Count == 0)
+          {
+            <li class="seguimiento-lista-consumo-empty">Sin registros en el rango seleccionado.</li>
+          }
+          else
+          {
+            @foreach (var grupo in AgruparConsumoPorTipo(_consumoRango))
+            {
+              <li class="seguimiento-lista-tipo">
+                <div class="seguimiento-lista-tipo-titulo">@grupo.Key</div>
+                <ul class="seguimiento-lista-consumo-sublista">
+                  @foreach (var item in grupo)
+                  {
+                    <li class="seguimiento-lista-consumo-item">
+                      <div class="seguimiento-consumo-principal">
+                        <span class="seguimiento-consumo-estanque">@ObtenerNombreEstanque(item.EstanqueId)</span>
+                        <span class="seguimiento-consumo-cantidad">@item.CantidadKg kg</span>
+                      </div>
+                      <div class="seguimiento-consumo-secundario">Lote @item.CodigoLote</div>
+                    </li>
+                  }
+                </ul>
+              </li>
+            }
+          }
+        </ul>
+      </article>
+    }
+
+    @if (_tab == "inventario")
+    {
     <article class="card seguimiento-card seguimiento-card-full">
       <div class="card-label">Inventario en bodega</div>
       <div class="card-title">Stock actual de alimentos</div>
+      <div class="seguimiento-resumen">
+        <div class="seguimiento-resumen-item">
+          <span class="seguimiento-resumen-label">Total insumos</span>
+          <strong class="seguimiento-resumen-value">@_inventario.Count</strong>
+        </div>
+        <div class="seguimiento-resumen-item">
+          <span class="seguimiento-resumen-label">Insumos críticos</span>
+          <strong class="seguimiento-resumen-value">@_insumosCriticos</strong>
+        </div>
+      </div>
       <div class="seguimiento-tabla-wrap">
         <table class="seguimiento-tabla">
           <thead>
@@ -111,6 +232,7 @@
         </table>
       </div>
     </article>
+    }
   </div>
 </div>
 
@@ -118,19 +240,28 @@
   private List<Lote> _lotes = new();
   private List<InventarioItem> _inventario = new();
   private List<ConsumoEstanqueDto> _consumoHoy = new();
+  private List<ConsumoEstanqueDto> _consumoRango = new();
+  private string _tab = "registrar";
   private int _loteId;
   private int _alimentoId;
   private DateTime _fechaRegistro = DateTime.Today;
+  private DateTime _fechaInicioRango = DateTime.Today.AddDays(-7);
+  private DateTime _fechaFinRango = DateTime.Today;
   private TimeOnly _horaRegistro = new(8, 0);
   private decimal _cantidadKg = 1m;
   private string _mensaje = string.Empty;
   private bool _esError;
+  private decimal _totalKgHoy;
+  private decimal _totalKgRango;
+  private int _insumosCriticos;
 
   protected override void OnInitialized()
   {
     _lotes = LotesService.ObtenerActivos();
     _inventario = AlimentacionService.ObtenerInventario().ToList();
     _consumoHoy = AlimentacionService.ObtenerConsumoPorEstanque(DateTime.Today).ToList();
+    _consumoRango = AlimentacionService.ObtenerConsumoPorEstanqueRango(_fechaInicioRango, _fechaFinRango).ToList();
+    ActualizarResumenes();
 
     if (_lotes.Count > 0)
     {
@@ -154,8 +285,23 @@
 
     _inventario = AlimentacionService.ObtenerInventario().ToList();
     _consumoHoy = AlimentacionService.ObtenerConsumoPorEstanque(DateTime.Today).ToList();
+    _consumoRango = AlimentacionService.ObtenerConsumoPorEstanqueRango(_fechaInicioRango, _fechaFinRango).ToList();
+    ActualizarResumenes();
     _cantidadKg = 1m;
     _horaRegistro = new TimeOnly(8, 0);
+  }
+
+  private void CargarConsumoRango()
+  {
+    _consumoRango = AlimentacionService.ObtenerConsumoPorEstanqueRango(_fechaInicioRango, _fechaFinRango).ToList();
+    ActualizarResumenes();
+  }
+
+  private void ActualizarResumenes()
+  {
+    _totalKgHoy = _consumoHoy.Sum(x => x.CantidadKg);
+    _totalKgRango = _consumoRango.Sum(x => x.CantidadKg);
+    _insumosCriticos = _inventario.Count(x => x.StockKg <= x.StockMinimoKg);
   }
 
   private void MostrarMensaje(string mensaje, bool esError)
@@ -177,4 +323,9 @@
         3 => "E-205",
         _ => $"E-{id:000}"
       };
+
+  private static IEnumerable<IGrouping<string, ConsumoEstanqueDto>> AgruparConsumoPorTipo(IEnumerable<ConsumoEstanqueDto> datos)
+      => datos
+          .GroupBy(x => string.IsNullOrWhiteSpace(x.TipoAlimento) ? "Sin tipo de alimento" : x.TipoAlimento)
+          .OrderBy(g => g.Key);
 }

@@ -628,6 +628,16 @@ section {
   align-items: start;
 }
 
+.seguimiento-registrar-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.seguimiento-registrar-wrap .seguimiento-card {
+  width: 100%;
+  max-width: 700px;
+}
+
 .seguimiento-card {
   margin: 0;
   padding: 1.2rem;
@@ -645,11 +655,115 @@ section {
 .seguimiento-lista-consumo {
   list-style: none;
   padding-left: 0;
-  margin-top: 0.4rem;
+  margin-top: 0.55rem;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: #334155;
   display: grid;
-  gap: 0.45rem;
+  gap: 0.6rem;
+}
+
+.seguimiento-lista-tipo {
+  list-style: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 0.6rem;
+  box-shadow: 0 4px 16px rgba(148, 163, 184, 0.1);
+}
+
+.seguimiento-lista-tipo-titulo {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #1e3a8a;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  padding: 0.14rem 0.64rem;
+  margin-bottom: 0.5rem;
+}
+
+.seguimiento-lista-consumo-sublista {
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 0;
+}
+
+.seguimiento-lista-consumo-item {
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  padding: 0.6rem 0.75rem;
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.12);
+  display: grid;
+  gap: 0.25rem;
+}
+
+.seguimiento-consumo-principal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.seguimiento-consumo-estanque {
+  font-weight: 700;
+  color: #1e3a8a;
+  letter-spacing: 0.02em;
+}
+
+.seguimiento-consumo-cantidad {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.14rem 0.58rem;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.seguimiento-consumo-secundario {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.seguimiento-lista-consumo-empty {
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #64748b;
+  padding: 0.6rem 0.75rem;
+}
+
+.seguimiento-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.65rem;
+  margin: 0.55rem 0 0.35rem;
+}
+
+.seguimiento-resumen-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 0.5rem 0.65rem;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.seguimiento-resumen-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.seguimiento-resumen-value {
+  font-size: 1rem;
+  color: #1f2937;
 }
 
 .seguimiento-tabla-wrap {

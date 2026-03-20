@@ -26,20 +26,40 @@ public class AlimentacionInventario_Service
     {
         var registrosDelDia = _registros.Where(r => r.FechaRegistro.Date == fecha.Date);
 
-        return registrosDelDia
-            .GroupBy(r => r.LoteId)
+        return AgruparConsumoPorEstanque(registrosDelDia);
+    }
+
+    public IReadOnlyList<ConsumoEstanqueDto> ObtenerConsumoPorEstanqueRango(DateTime fechaInicio, DateTime fechaFin)
+    {
+        var inicio = fechaInicio.Date;
+        var fin = fechaFin.Date;
+        if (fin < inicio)
+        {
+            (inicio, fin) = (fin, inicio);
+        }
+
+        var registrosRango = _registros.Where(r => r.FechaRegistro.Date >= inicio && r.FechaRegistro.Date <= fin);
+        return AgruparConsumoPorEstanque(registrosRango);
+    }
+
+    private IReadOnlyList<ConsumoEstanqueDto> AgruparConsumoPorEstanque(IEnumerable<RegistroAlimentacion> registros)
+    {
+        return registros
+            .GroupBy(r => new { r.LoteId, r.TipoAlimento })
             .Select(g =>
             {
-                var lote = _lotesService.ObtenerPorId(g.Key);
+                var lote = _lotesService.ObtenerPorId(g.Key.LoteId);
                 return new ConsumoEstanqueDto
                 {
-                    LoteId = g.Key,
-                    CodigoLote = lote?.Codigo ?? $"Lote {g.Key}",
+                    LoteId = g.Key.LoteId,
+                    CodigoLote = lote?.Codigo ?? $"Lote {g.Key.LoteId}",
                     EstanqueId = lote?.EstanqueId ?? 0,
+                    TipoAlimento = g.Key.TipoAlimento,
                     CantidadKg = g.Sum(x => x.CantidadKg)
                 };
             })
-            .OrderBy(x => x.EstanqueId)
+            .OrderBy(x => x.TipoAlimento)
+            .ThenBy(x => x.EstanqueId)
             .ThenBy(x => x.CodigoLote)
             .ToList();
     }
@@ -108,5 +128,6 @@ public class ConsumoEstanqueDto
     public int LoteId { get; set; }
     public string CodigoLote { get; set; } = string.Empty;
     public int EstanqueId { get; set; }
+    public string TipoAlimento { get; set; } = string.Empty;
     public decimal CantidadKg { get; set; }
 }
