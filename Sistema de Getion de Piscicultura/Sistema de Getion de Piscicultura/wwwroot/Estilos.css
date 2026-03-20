@@ -529,10 +529,11 @@ section {
 }
 
 .field input,
+.field select,
 .field textarea {
   border-radius: 12px;
   border: 1px solid rgba(187, 205, 229, 0.9);
-  padding: 0.5rem 0.7rem;
+  padding: 0.62rem 0.85rem;
   font-size: 0.9rem;
   font-family: inherit;
   outline: none;
@@ -541,10 +542,26 @@ section {
 }
 
 .field input:focus,
+.field select:focus,
 .field textarea:focus {
   border-color: var(--baltic-blue);
   box-shadow: 0 0 0 1px rgba(28, 93, 153, 0.4);
   background: #ffffff;
+}
+
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #6b7280 50%),
+    linear-gradient(135deg, #6b7280 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) calc(50% - 2px),
+    calc(100% - 10px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
 }
 
 .field textarea {

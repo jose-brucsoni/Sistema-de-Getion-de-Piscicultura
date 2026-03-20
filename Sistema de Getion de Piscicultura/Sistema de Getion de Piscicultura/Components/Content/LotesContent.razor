@@ -1,3 +1,7 @@
+@using Sistema_de_Getion_de_Piscicultura.Modelos
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Lotes_Service LotesService
+
 <div class="section-container">
   <div>
     <div class="tabs">
@@ -12,6 +16,12 @@
         <article class="card" style="grid-column: 1 / -1;">
           <div class="card-label">Lotes activos</div>
           <div class="card-title">Vista general</div>
+          @if (!string.IsNullOrWhiteSpace(_mensaje))
+          {
+            <div style="@EstiloMensaje">
+              @_mensaje
+            </div>
+          }
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
               <thead>
@@ -23,36 +33,25 @@
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Cant. inicial</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Cant. actual</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Proveedor</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-001</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Trucha arcoíris</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-001</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">15/03/2026</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">3.000</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">2.850</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Acuicultura Andina SRL</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-004</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carpa común</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-101</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">10/02/2026</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">1.800</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">1.760</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Piscigranjas Altiplano</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;">LOT-2025-023</td>
-                  <td style="padding:0.45rem 0.6rem;">Tilapia</td>
-                  <td style="padding:0.45rem 0.6rem;">E-205</td>
-                  <td style="padding:0.45rem 0.6rem;">01/11/2025</td>
-                  <td style="padding:0.45rem 0.6rem;">900</td>
-                  <td style="padding:0.45rem 0.6rem;">860</td>
-                  <td style="padding:0.45rem 0.6rem;">Truchas del Sur Ltda.</td>
-                </tr>
+                @foreach (var lote in _lotes)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@lote.Codigo</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEspecie(lote.EspecieId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEstanque(lote.EstanqueId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@lote.FechaSiembra.ToString("dd/MM/yyyy")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@lote.CantidadInicial</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@lote.CantidadActual</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreProveedor(lote.ProveedorId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">
+                      <button class="btn-login" style="padding:0.25rem 0.6rem;font-size:0.8rem;" type="button" @onclick="() => SolicitarAnularDesdeLista(lote.Id)">Anular</button>
+                    </td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -69,42 +68,46 @@
           <form class="contact-form">
             <div class="field">
               <label for="lote-codigo">Código de lote</label>
-              <input id="lote-codigo" type="text" placeholder="Se puede generar como LOT-YYYY-XXX" />
+              <input id="lote-codigo" type="text" value="@_codigoSiguiente" disabled />
+              <small style="color:#6b7280;">Este código se asignará automáticamente al guardar.</small>
             </div>
             <div class="field">
               <label for="lote-especie">Especie</label>
-              <select id="lote-especie">
-                <option>Trucha arcoíris</option>
-                <option>Carpa común</option>
-                <option>Tilapia</option>
+              <select id="lote-especie" @bind="_nuevo.EspecieId">
+                @foreach (var item in _especies)
+                {
+                  <option value="@item.Id">@item.Nombre</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="lote-proveedor">Proveedor</label>
-              <select id="lote-proveedor">
-                <option>Acuicultura Andina SRL</option>
-                <option>Piscigranjas Altiplano</option>
-                <option>Truchas del Sur Ltda.</option>
+              <select id="lote-proveedor" @bind="_nuevo.ProveedorId">
+                @foreach (var item in _proveedores)
+                {
+                  <option value="@item.Id">@item.Nombre</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="lote-estanque">Estanque inicial</label>
-              <select id="lote-estanque">
-                <option>E-001 (pequeño)</option>
-                <option>E-101 (mediano)</option>
-                <option>E-205 (grande)</option>
+              <select id="lote-estanque" @bind="_nuevo.EstanqueId">
+                @foreach (var item in _estanques)
+                {
+                  <option value="@item.Id">@item.Nombre</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="lote-fecha">Fecha de siembra</label>
-              <input id="lote-fecha" type="date" />
+              <input id="lote-fecha" type="date" @bind="_nuevo.FechaSiembra" />
             </div>
             <div class="field">
               <label for="lote-cantidad">Cantidad de alevines</label>
-              <input id="lote-cantidad" type="number" min="0" placeholder="Ej. 3000" />
+              <input id="lote-cantidad" type="number" min="1" @bind="_nuevo.CantidadInicial" placeholder="Ej. 3000" />
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Guardar lote</button>
+              <button class="btn-login" type="button" @onclick="SolicitarCrearLote">Guardar lote</button>
             </div>
           </form>
         </article>
@@ -120,27 +123,73 @@
           <form class="contact-form">
             <div class="field">
               <label for="editar-lote-codigo">Lote</label>
-              <select id="editar-lote-codigo">
-                <option>LOT-2026-001</option>
-                <option>LOT-2026-004</option>
-                <option>LOT-2025-023</option>
+              <select id="editar-lote-codigo" @bind="_loteEditarId" @bind:after="() => CargarLoteEdicion()">
+                <option value="0">-- Seleccione un lote --</option>
+                @foreach (var lote in _lotes)
+                {
+                  <option value="@lote.Id">@lote.Codigo</option>
+                }
               </select>
             </div>
-            <div class="field">
-              <label for="editar-lote-estanque">Estanque actual</label>
-              <select id="editar-lote-estanque">
-                <option>E-001</option>
-                <option>E-101</option>
-                <option>E-205</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="editar-lote-cantidad">Cantidad actual de peces</label>
-              <input id="editar-lote-cantidad" type="number" min="0" />
-            </div>
-            <div class="field">
-              <button class="btn-login" type="button">Guardar cambios</button>
-            </div>
+            @if (_loteEditarId > 0)
+            {
+              <div class="field">
+                <label for="editar-lote-codigo-texto">Código</label>
+                <input id="editar-lote-codigo-texto" type="text" @bind="_editarCodigo" disabled />
+              </div>
+              <div class="field">
+                <label for="editar-lote-estanque">Estanque actual</label>
+                <select id="editar-lote-estanque" @bind="_editarEstanqueId">
+                  @foreach (var item in _estanques)
+                  {
+                    <option value="@item.Id">@item.Nombre</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label for="editar-lote-especie">Especie</label>
+                <select id="editar-lote-especie" @bind="_editarEspecieId">
+                  @foreach (var item in _especies)
+                  {
+                    <option value="@item.Id">@item.Nombre</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label for="editar-lote-proveedor">Proveedor</label>
+                <select id="editar-lote-proveedor" @bind="_editarProveedorId">
+                  @foreach (var item in _proveedores)
+                  {
+                    <option value="@item.Id">@item.Nombre</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label for="editar-lote-fecha">Fecha de siembra</label>
+                <input id="editar-lote-fecha" type="date" @bind="_editarFechaSiembra" />
+              </div>
+              <div class="field">
+                <label for="editar-lote-cantidad-inicial">Cantidad inicial</label>
+                <input id="editar-lote-cantidad-inicial" type="number" min="1" @bind="_editarCantidadInicial" />
+              </div>
+              <div class="field">
+                <label for="editar-lote-fase">Fase</label>
+                <select id="editar-lote-fase" @bind="_editarFaseActual">
+                  @foreach (var fase in Enum.GetValues<FaseCrecimiento>())
+                  {
+                    <option value="@fase">@fase</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label for="editar-lote-cantidad">Cantidad actual de peces</label>
+                <input id="editar-lote-cantidad" type="number" min="0" value="@_editarCantidadActual" disabled />
+              </div>
+              <div class="field">
+                <button class="btn-login" type="button" @onclick="SolicitarGuardarEdicion">Guardar cambios</button>
+                <button class="btn-login" style="margin-left:0.6rem;background:#991b1b;" type="button" @onclick="SolicitarAnularDesdeEdicion">Anular lote</button>
+              </div>
+            }
           </form>
         </article>
       </div>
@@ -148,6 +197,312 @@
   </div>
 </div>
 
+@if (_mostrarConfirmacion)
+{
+  <div style="position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000;">
+    <div style="background:white;border-radius:10px;max-width:420px;width:90%;padding:1rem;">
+      <div style="font-weight:700;margin-bottom:0.4rem;">Confirmar acción</div>
+      <div style="font-size:0.95rem;color:#374151;margin-bottom:1rem;">@_mensajeConfirmacion</div>
+      <div style="display:flex;justify-content:flex-end;gap:0.6rem;">
+        <button type="button" class="btn-login" style="background:#6b7280;" @onclick="CancelarConfirmacion">Cancelar</button>
+        <button type="button" class="btn-login" @onclick="ConfirmarAccion">Confirmar</button>
+      </div>
+    </div>
+  </div>
+}
+
 @code {
   private string _tab = "lista";
+  private string _mensaje = string.Empty;
+  private bool _esError;
+  private List<Lote> _lotes = new();
+  private bool _mostrarConfirmacion;
+  private string _mensajeConfirmacion = string.Empty;
+  private AccionPendiente _accionPendiente = AccionPendiente.Ninguna;
+  private int _lotePendienteId;
+  private string _codigoSiguiente = string.Empty;
+
+  private Lote _nuevo = new()
+  {
+    FechaSiembra = DateTime.Today,
+    FaseActual = FaseCrecimiento.Alevinaje,
+    Estado = EstadoLote.Activo,
+    EspecieId = 1,
+    EstanqueId = 1,
+    ProveedorId = 1
+  };
+
+  private int _loteEditarId;
+  private string _editarCodigo = string.Empty;
+  private DateTime _editarFechaSiembra = DateTime.Today;
+  private int _editarCantidadInicial = 1;
+  private int _editarCantidadActual;
+  private int _editarEspecieId = 1;
+  private int _editarEstanqueId = 1;
+  private int _editarProveedorId = 1;
+  private FaseCrecimiento _editarFaseActual = FaseCrecimiento.Alevinaje;
+
+  private readonly List<CatalogoItem> _especies = new()
+  {
+    new(1, "Trucha arcoíris"),
+    new(2, "Carpa común"),
+    new(3, "Tilapia")
+  };
+
+  private readonly List<CatalogoItem> _estanques = new()
+  {
+    new(1, "E-001 (pequeño)"),
+    new(2, "E-101 (mediano)"),
+    new(3, "E-205 (grande)")
+  };
+
+  private readonly List<CatalogoItem> _proveedores = new()
+  {
+    new(1, "Acuicultura Andina SRL"),
+    new(2, "Piscigranjas Altiplano"),
+    new(3, "Truchas del Sur Ltda.")
+  };
+
+  protected override void OnInitialized()
+  {
+    RefrescarLotes();
+    ActualizarCodigoSiguiente();
+  }
+
+  private void SolicitarCrearLote()
+  {
+    AbrirConfirmacion($"¿Deseas registrar el lote {_codigoSiguiente}?", AccionPendiente.Crear);
+  }
+
+  private void EjecutarCrearLote()
+  {
+    var lote = new Lote
+    {
+      FechaSiembra = _nuevo.FechaSiembra,
+      CantidadInicial = _nuevo.CantidadInicial,
+      EspecieId = _nuevo.EspecieId,
+      EstanqueId = _nuevo.EstanqueId,
+      ProveedorId = _nuevo.ProveedorId
+    };
+
+    var resultado = LotesService.Crear(lote);
+    MostrarMensaje(resultado.mensaje, !resultado.exito);
+    if (!resultado.exito)
+    {
+      return;
+    }
+
+    _nuevo = new Lote
+    {
+      FechaSiembra = DateTime.Today,
+      FaseActual = FaseCrecimiento.Alevinaje,
+      Estado = EstadoLote.Activo,
+      EspecieId = 1,
+      EstanqueId = 1,
+      ProveedorId = 1
+    };
+
+    RefrescarLotes();
+    ActualizarCodigoSiguiente();
+    _tab = "lista";
+  }
+
+  private void SolicitarGuardarEdicion()
+  {
+    if (_loteEditarId <= 0)
+    {
+      MostrarMensaje("Seleccione un lote para editar.", true);
+      return;
+    }
+
+    var codigo = string.IsNullOrWhiteSpace(_editarCodigo) ? "(sin codigo)" : _editarCodigo.Trim();
+    AbrirConfirmacion($"¿Deseas guardar los cambios del lote {codigo}?", AccionPendiente.Editar);
+  }
+
+  private void EjecutarGuardarEdicion()
+  {
+    var resultado = LotesService.Editar(
+      _loteEditarId,
+      _editarFechaSiembra,
+      _editarCantidadInicial,
+      _editarEspecieId,
+      _editarEstanqueId,
+      _editarProveedorId,
+      _editarFaseActual);
+
+    MostrarMensaje(resultado.mensaje, !resultado.exito);
+    if (!resultado.exito)
+    {
+      return;
+    }
+
+    RefrescarLotes();
+    CargarLoteEdicion();
+    _tab = "lista";
+  }
+
+  private void SolicitarAnularDesdeLista(int loteId)
+  {
+    _lotePendienteId = loteId;
+    var lote = LotesService.ObtenerPorId(loteId);
+    var codigo = lote?.Codigo ?? $"ID {loteId}";
+    AbrirConfirmacion($"¿Deseas anular el lote {codigo}?", AccionPendiente.AnularLista);
+  }
+
+  private void EjecutarAnularDesdeLista(int loteId)
+  {
+    var resultado = LotesService.Anular(loteId);
+    MostrarMensaje(resultado.mensaje, !resultado.exito);
+    RefrescarLotes();
+    if (_lotes.Count > 0)
+    {
+      _loteEditarId = _lotes[0].Id;
+      CargarLoteEdicion();
+    }
+  }
+
+  private void SolicitarAnularDesdeEdicion()
+  {
+    if (_loteEditarId <= 0)
+    {
+      MostrarMensaje("Seleccione un lote para anular.", true);
+      return;
+    }
+
+    var codigo = string.IsNullOrWhiteSpace(_editarCodigo) ? $"ID {_loteEditarId}" : _editarCodigo.Trim();
+    AbrirConfirmacion($"¿Deseas anular el lote {codigo}?", AccionPendiente.AnularEdicion);
+  }
+
+  private void EjecutarAnularDesdeEdicion()
+  {
+    if (_loteEditarId <= 0)
+    {
+      return;
+    }
+
+    var resultado = LotesService.Anular(_loteEditarId);
+    MostrarMensaje(resultado.mensaje, !resultado.exito);
+    RefrescarLotes();
+    if (_lotes.Count > 0)
+    {
+      _loteEditarId = _lotes[0].Id;
+      CargarLoteEdicion();
+    }
+  }
+
+  private void CargarLoteEdicion()
+  {
+    if (_loteEditarId <= 0)
+    {
+      LimpiarFormularioEdicion();
+      return;
+    }
+
+    var lote = LotesService.ObtenerPorId(_loteEditarId);
+    if (lote is null)
+    {
+      LimpiarFormularioEdicion();
+      return;
+    }
+
+    _editarCodigo = lote.Codigo;
+    _editarFechaSiembra = lote.FechaSiembra;
+    _editarCantidadInicial = lote.CantidadInicial;
+    _editarCantidadActual = lote.CantidadActual;
+    _editarEspecieId = lote.EspecieId;
+    _editarEstanqueId = lote.EstanqueId;
+    _editarProveedorId = lote.ProveedorId;
+    _editarFaseActual = lote.FaseActual;
+  }
+
+  private void ConfirmarAccion()
+  {
+    _mostrarConfirmacion = false;
+
+    switch (_accionPendiente)
+    {
+      case AccionPendiente.Crear:
+        EjecutarCrearLote();
+        break;
+      case AccionPendiente.Editar:
+        EjecutarGuardarEdicion();
+        break;
+      case AccionPendiente.AnularLista:
+        EjecutarAnularDesdeLista(_lotePendienteId);
+        break;
+      case AccionPendiente.AnularEdicion:
+        EjecutarAnularDesdeEdicion();
+        break;
+    }
+
+    _accionPendiente = AccionPendiente.Ninguna;
+    _lotePendienteId = 0;
+  }
+
+  private void CancelarConfirmacion()
+  {
+    _mostrarConfirmacion = false;
+    _accionPendiente = AccionPendiente.Ninguna;
+    _lotePendienteId = 0;
+  }
+
+  private void AbrirConfirmacion(string mensaje, AccionPendiente accion)
+  {
+    _mensajeConfirmacion = mensaje;
+    _accionPendiente = accion;
+    _mostrarConfirmacion = true;
+  }
+
+  private void LimpiarFormularioEdicion()
+  {
+    _editarCodigo = string.Empty;
+    _editarFechaSiembra = DateTime.Today;
+    _editarCantidadInicial = 1;
+    _editarCantidadActual = 0;
+    _editarEspecieId = 1;
+    _editarEstanqueId = 1;
+    _editarProveedorId = 1;
+    _editarFaseActual = FaseCrecimiento.Alevinaje;
+  }
+
+  private void RefrescarLotes()
+  {
+    _lotes = LotesService.ObtenerActivos();
+  }
+
+  private void ActualizarCodigoSiguiente()
+  {
+    _codigoSiguiente = LotesService.ObtenerCodigoSiguiente();
+  }
+
+  private void MostrarMensaje(string mensaje, bool esError)
+  {
+    _mensaje = mensaje;
+    _esError = esError;
+  }
+
+  private string EstiloMensaje
+      => _esError
+          ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+          : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
+
+  private string ObtenerNombreEspecie(int id)
+      => _especies.FirstOrDefault(x => x.Id == id)?.Nombre ?? $"Especie {id}";
+
+  private string ObtenerNombreEstanque(int id)
+      => _estanques.FirstOrDefault(x => x.Id == id)?.Nombre ?? $"Estanque {id}";
+
+  private string ObtenerNombreProveedor(int id)
+      => _proveedores.FirstOrDefault(x => x.Id == id)?.Nombre ?? $"Proveedor {id}";
+
+  private enum AccionPendiente
+  {
+    Ninguna = 0,
+    Crear = 1,
+    Editar = 2,
+    AnularLista = 3,
+    AnularEdicion = 4
+  }
+
+  private sealed record CatalogoItem(int Id, string Nombre);
 }

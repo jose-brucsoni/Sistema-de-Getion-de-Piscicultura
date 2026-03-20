@@ -1,5 +1,6 @@
 using Sistema_de_Getion_de_Piscicultura.Client.Pages;
 using Sistema_de_Getion_de_Piscicultura.Components;
+using Sistema_de_Getion_de_Piscicultura.Servicios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+builder.Services.AddScoped<Lotes_Service>();
 
 var app = builder.Build();
 
