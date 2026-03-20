@@ -721,6 +721,28 @@ section {
   border-bottom: 1px solid #e5e7eb;
 }
 
+.inventario-estado-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.62rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.inventario-estado-badge--ok {
+  color: #166534;
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.inventario-estado-badge--critico {
+  color: #991b1b;
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
 footer {
   padding: 1.8rem 1.5rem 2.2rem;
   font-size: 0.8rem;

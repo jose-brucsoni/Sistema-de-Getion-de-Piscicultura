@@ -16,6 +16,9 @@ public class Inventario_Service
     public List<InventarioItem> ObtenerTodos()
         => _items.OrderBy(x => x.Nombre).ToList();
 
+    public InventarioItem? ObtenerPorId(int itemId)
+        => _items.FirstOrDefault(x => x.Id == itemId);
+
     public (bool exito, string mensaje) AgregarNuevoItem(string nombre, string categoria, decimal stockInicialKg, decimal stockMinimoKg)
     {
         if (string.IsNullOrWhiteSpace(nombre))
@@ -60,5 +63,27 @@ public class Inventario_Service
 
         item.StockKg += cantidadKg;
         return (true, "Stock actualizado correctamente.");
+    }
+
+    public (bool exito, string mensaje) DescontarStock(int itemId, decimal cantidadKg)
+    {
+        var item = _items.FirstOrDefault(x => x.Id == itemId);
+        if (item is null)
+        {
+            return (false, "Insumo no encontrado.");
+        }
+
+        if (cantidadKg <= 0)
+        {
+            return (false, "La cantidad debe ser mayor a cero.");
+        }
+
+        if (item.StockKg < cantidadKg)
+        {
+            return (false, "Stock insuficiente.");
+        }
+
+        item.StockKg -= cantidadKg;
+        return (true, "Stock descontado correctamente.");
     }
 }

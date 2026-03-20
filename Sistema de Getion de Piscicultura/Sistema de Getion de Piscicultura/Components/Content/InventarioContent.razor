@@ -89,7 +89,9 @@
                                 <td>@item.StockKg kg</td>
                                 <td>@item.StockMinimoKg kg</td>
                                 <td>
-                                    @(item.StockKg <= item.StockMinimoKg ? "Reabastecer" : "Disponible")
+                                    <span class="inventario-estado-badge @(item.StockKg <= item.StockMinimoKg ? "inventario-estado-badge--critico" : "inventario-estado-badge--ok")">
+                                        @(item.StockKg <= item.StockMinimoKg ? "Reabastecer" : "Disponible")
+                                    </span>
                                 </td>
                             </tr>
                         }
