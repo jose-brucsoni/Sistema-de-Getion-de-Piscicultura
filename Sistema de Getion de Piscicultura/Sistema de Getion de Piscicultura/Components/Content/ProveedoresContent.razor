@@ -1,3 +1,6 @@
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Catalogos_Service CatalogosService
+
 <div class="section-container">
   <div>
     <div class="tabs">
@@ -5,6 +8,11 @@
       <button type="button" class="tab-button @(_tab == "crear" ? "tab-button--active" : "")" @onclick='() => _tab = "crear"'>Crear</button>
       <button type="button" class="tab-button @(_tab == "editar" ? "tab-button--active" : "")" @onclick='() => _tab = "editar"'>Editar</button>
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(_mensaje))
+    {
+      <div style="@EstiloMensaje">@_mensaje</div>
+    }
 
     @if (_tab == "lista")
     {
@@ -18,37 +26,20 @@
                 <tr style="background:#eef2ff;color:#111827;">
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Proveedor</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Contacto</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Teléfono</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Correo</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Certificación sanitaria</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Calificación</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Acuicultura Andina SRL</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Luis Herrera</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">+591 700 11111</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">contacto@acuandina.bo</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Vigente hasta 12/2026</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">★★★★★</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Piscigranjas Altiplano</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Roxana Flores</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">+591 700 22222</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">ventas@altiplano.bo</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Vigente hasta 08/2027</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">★★★★☆</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;">Truchas del Sur Ltda.</td>
-                  <td style="padding:0.45rem 0.6rem;">Miguel Arce</td>
-                  <td style="padding:0.45rem 0.6rem;">+591 700 33333</td>
-                  <td style="padding:0.45rem 0.6rem;">info@truchasdelsur.bo</td>
-                  <td style="padding:0.45rem 0.6rem;">En revisión</td>
-                  <td style="padding:0.45rem 0.6rem;">★★★☆☆</td>
-                </tr>
+                @foreach (var p in _proveedores)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@p.Nombre</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@(string.IsNullOrWhiteSpace(p.Contacto) ? "—" : p.Contacto)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@(string.IsNullOrWhiteSpace(p.CertificacionSanitaria) ? "—" : p.CertificacionSanitaria)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:@(p.Activo ? "#16a34a" : "#f97316");">@(p.Activo ? "Activo" : "Inactivo")</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -65,30 +56,18 @@
           <form class="contact-form">
             <div class="field">
               <label for="nuevo-prov-nombre">Nombre del proveedor</label>
-              <input id="nuevo-prov-nombre" type="text" placeholder="Ej. Acuicultura Andina SRL" />
+              <input id="nuevo-prov-nombre" type="text" @bind="_nuevoNombre" placeholder="Ej. Acuicultura Andina SRL" />
             </div>
             <div class="field">
               <label for="nuevo-prov-contacto">Persona de contacto</label>
-              <input id="nuevo-prov-contacto" type="text" placeholder="Nombre y apellido" />
-            </div>
-            <div class="field">
-              <label for="nuevo-prov-telefono">Teléfono</label>
-              <input id="nuevo-prov-telefono" type="tel" placeholder="+591 700 00000" />
-            </div>
-            <div class="field">
-              <label for="nuevo-prov-correo">Correo</label>
-              <input id="nuevo-prov-correo" type="email" placeholder="correo@proveedor.bo" />
+              <input id="nuevo-prov-contacto" type="text" @bind="_nuevoContacto" placeholder="Nombre y apellido" />
             </div>
             <div class="field">
               <label for="nuevo-prov-cert">Certificación sanitaria</label>
-              <input id="nuevo-prov-cert" type="text" placeholder="Ej. Vigente hasta 12/2026" />
+              <input id="nuevo-prov-cert" type="text" @bind="_nuevoCertificacion" placeholder="Ej. Vigente hasta 12/2026" />
             </div>
             <div class="field">
-              <label for="nuevo-prov-calificacion">Calificación (1–5)</label>
-              <input id="nuevo-prov-calificacion" type="number" min="1" max="5" placeholder="5" />
-            </div>
-            <div class="field">
-              <button class="btn-login" type="button">Guardar proveedor</button>
+              <button class="btn-login" type="button" @onclick="GuardarNuevo">Guardar proveedor</button>
             </div>
           </form>
         </article>
@@ -104,34 +83,29 @@
           <form class="contact-form">
             <div class="field">
               <label for="editar-prov-nombre">Proveedor</label>
-              <select id="editar-prov-nombre">
-                <option>Acuicultura Andina SRL</option>
-                <option>Piscigranjas Altiplano</option>
-                <option>Truchas del Sur Ltda.</option>
+              <select id="editar-prov-nombre" @bind="_editarId" @bind:after="CargarEdicion">
+                <option value="0">-- Seleccione --</option>
+                @foreach (var p in _proveedores)
+                {
+                  <option value="@p.IdProveedor">@p.Nombre</option>
+                }
               </select>
             </div>
             <div class="field">
+              <label for="editar-prov-nombre-texto">Nombre</label>
+              <input id="editar-prov-nombre-texto" type="text" @bind="_editarNombre" />
+            </div>
+            <div class="field">
               <label for="editar-prov-contacto">Persona de contacto</label>
-              <input id="editar-prov-contacto" type="text" placeholder="Nombre y apellido" />
-            </div>
-            <div class="field">
-              <label for="editar-prov-telefono">Teléfono</label>
-              <input id="editar-prov-telefono" type="tel" placeholder="+591 700 00000" />
-            </div>
-            <div class="field">
-              <label for="editar-prov-correo">Correo</label>
-              <input id="editar-prov-correo" type="email" placeholder="correo@proveedor.bo" />
+              <input id="editar-prov-contacto" type="text" @bind="_editarContacto" />
             </div>
             <div class="field">
               <label for="editar-prov-cert">Certificación sanitaria</label>
-              <input id="editar-prov-cert" type="text" placeholder="Ej. Vigente hasta 12/2026" />
+              <input id="editar-prov-cert" type="text" @bind="_editarCertificacion" />
             </div>
             <div class="field">
-              <label for="editar-prov-calificacion">Calificación (1–5)</label>
-              <input id="editar-prov-calificacion" type="number" min="1" max="5" placeholder="5" />
-            </div>
-            <div class="field">
-              <button class="btn-login" type="button">Guardar cambios</button>
+              <button class="btn-login" type="button" @onclick="GuardarEdicion">Guardar cambios</button>
+              <button class="btn-login" style="margin-left:0.6rem;background:#991b1b;" type="button" @onclick="DesactivarSeleccionado">Desactivar</button>
             </div>
           </form>
         </article>
@@ -142,4 +116,98 @@
 
 @code {
   private string _tab = "lista";
+  private List<ProveedorResumenDto> _proveedores = new();
+  private string _mensaje = string.Empty;
+  private bool _esError;
+
+  private string _nuevoNombre = string.Empty;
+  private string _nuevoContacto = string.Empty;
+  private string _nuevoCertificacion = string.Empty;
+
+  private int _editarId;
+  private string _editarNombre = string.Empty;
+  private string _editarContacto = string.Empty;
+  private string _editarCertificacion = string.Empty;
+
+  protected override void OnInitialized()
+  {
+    Refrescar();
+  }
+
+  private void GuardarNuevo()
+  {
+    try
+    {
+      var r = CatalogosService.CrearProveedor(_nuevoNombre, _nuevoContacto, _nuevoCertificacion);
+      MostrarMensaje(r.mensaje, !r.exito);
+      if (!r.exito) return;
+
+      _nuevoNombre = string.Empty;
+      _nuevoContacto = string.Empty;
+      _nuevoCertificacion = string.Empty;
+      Refrescar();
+      _tab = "lista";
+    }
+    catch (Exception ex)
+    {
+      MostrarMensaje($"Error al crear proveedor: {ex.Message}", true);
+    }
+  }
+
+  private void GuardarEdicion()
+  {
+    try
+    {
+      var r = CatalogosService.ActualizarProveedor(_editarId, _editarNombre, _editarContacto, _editarCertificacion);
+      MostrarMensaje(r.mensaje, !r.exito);
+      if (!r.exito) return;
+      Refrescar();
+      _tab = "lista";
+    }
+    catch (Exception ex)
+    {
+      MostrarMensaje($"Error al actualizar proveedor: {ex.Message}", true);
+    }
+  }
+
+  private void DesactivarSeleccionado()
+  {
+    try
+    {
+      var r = CatalogosService.DesactivarProveedor(_editarId);
+      MostrarMensaje(r.mensaje, !r.exito);
+      if (!r.exito) return;
+      Refrescar();
+      _tab = "lista";
+    }
+    catch (Exception ex)
+    {
+      MostrarMensaje($"Error al desactivar proveedor: {ex.Message}", true);
+    }
+  }
+
+  private void CargarEdicion()
+  {
+    var x = _proveedores.FirstOrDefault(p => p.IdProveedor == _editarId);
+    if (x is null) return;
+    _editarNombre = x.Nombre;
+    _editarContacto = x.Contacto ?? string.Empty;
+    _editarCertificacion = x.CertificacionSanitaria ?? string.Empty;
+  }
+
+  private void Refrescar()
+  {
+    _proveedores = CatalogosService.ObtenerProveedores();
+  }
+
+  private void MostrarMensaje(string mensaje, bool esError)
+  {
+    _mensaje = mensaje;
+    _esError = esError;
+  }
+
+  private string EstiloMensaje
+      => _esError
+          ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+          : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
 }

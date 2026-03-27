@@ -1,3 +1,8 @@
+@using Sistema_de_Getion_de_Piscicultura.Modelos
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Lotes_Service LotesService
+@inject AlimentacionInventario_Service AlimentacionService
+
 <div class="section-container">
   <div>
     <div class="tabs">
@@ -6,12 +11,17 @@
       <button type="button" class="tab-button @(_tab == "resumen" ? "tab-button--active" : "")" @onclick='() => _tab = "resumen"'>Resumen diario</button>
     </div>
 
+    @if (!string.IsNullOrWhiteSpace(_mensaje))
+    {
+      <div style="@EstiloMensaje">@_mensaje</div>
+    }
+
     @if (_tab == "lista")
     {
       <div class="section-grid">
         <article class="card" style="grid-column: 1 / -1;">
           <div class="card-label">Registros recientes</div>
-          <div class="card-title">Alimentación por estanque</div>
+          <div class="card-title">Alimentación por lote/estanque</div>
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
               <thead>
@@ -22,37 +32,25 @@
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Tipo de alimento</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Cantidad (kg)</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Horario</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Técnico</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-001</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-001</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Micro-granulado Fase 1</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">12.5</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">08:00</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carlos Pérez</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-101</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-004</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Pellets juveniles Fase 2</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">18.0</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">12:00</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">María Gómez</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;">17/03/2026</td>
-                  <td style="padding:0.45rem 0.6rem;">E-205</td>
-                  <td style="padding:0.45rem 0.6rem;">LOT-2025-023</td>
-                  <td style="padding:0.45rem 0.6rem;">Concentrado engorde Fase 4</td>
-                  <td style="padding:0.45rem 0.6rem;">25.0</td>
-                  <td style="padding:0.45rem 0.6rem;">17:30</td>
-                  <td style="padding:0.45rem 0.6rem;">Jorge López</td>
-                </tr>
+                @foreach (var r in _registrosHoy)
+                {
+                  var lote = _lotes.FirstOrDefault(x => x.Id == r.LoteId);
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEstanque(lote?.EstanqueId ?? 0)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@(lote?.Codigo ?? $"Lote {r.LoteId}")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.TipoAlimento</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.CantidadKg.ToString("0.##")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Horario.ToString(@"hh\:mm")</td>
+                  </tr>
+                }
+                @if (_registrosHoy.Count == 0)
+                {
+                  <tr><td colspan="6" style="padding:0.75rem;color:#6b7280;">No hay registros hoy.</td></tr>
+                }
               </tbody>
             </table>
           </div>
@@ -68,39 +66,37 @@
           <div class="card-title">Registrar alimentación</div>
           <form class="contact-form">
             <div class="field">
-              <label for="ali-estanque">Estanque</label>
-              <select id="ali-estanque">
-                <option>E-001</option>
-                <option>E-101</option>
-                <option>E-205</option>
+              <label for="ali-lote">Lote</label>
+              <select id="ali-lote" @bind="_loteId">
+                @foreach (var lote in _lotes)
+                {
+                  <option value="@lote.Id">@lote.Codigo (@ObtenerNombreEstanque(lote.EstanqueId))</option>
+                }
               </select>
             </div>
             <div class="field">
-              <label for="ali-lote">Lote</label>
-              <input id="ali-lote" type="text" placeholder="Ej. LOT-2026-001" />
+              <label for="ali-fecha">Fecha</label>
+              <input id="ali-fecha" type="date" @bind="_fechaRegistro" />
+            </div>
+            <div class="field">
+              <label for="ali-hora">Horario</label>
+              <input id="ali-hora" type="time" @bind="_horaRegistro" />
             </div>
             <div class="field">
               <label for="ali-tipo">Tipo de alimento</label>
-              <select id="ali-tipo">
-                <option>Micro-granulado Fase 1</option>
-                <option>Pellets juveniles Fase 2</option>
-                <option>Concentrado engorde Fase 3-4</option>
+              <select id="ali-tipo" @bind="_alimentoId">
+                @foreach (var alimento in _inventario)
+                {
+                  <option value="@alimento.Id">@alimento.Nombre (@alimento.StockKg kg)</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="ali-cantidad">Cantidad (kg)</label>
-              <input id="ali-cantidad" type="number" min="0" step="0.1" placeholder="Ej. 12.5" />
+              <input id="ali-cantidad" type="number" min="0.01" step="0.01" @bind="_cantidadKg" />
             </div>
             <div class="field">
-              <label for="ali-hora">Horario</label>
-              <input id="ali-hora" type="time" />
-            </div>
-            <div class="field">
-              <label for="ali-tecnico">Técnico responsable</label>
-              <input id="ali-tecnico" type="text" placeholder="Nombre del técnico" />
-            </div>
-            <div class="field">
-              <button class="btn-login" type="button">Guardar registro</button>
+              <button class="btn-login" type="button" @onclick="Registrar">Guardar registro</button>
             </div>
           </form>
         </article>
@@ -114,17 +110,17 @@
           <div class="card-label">Consumo diario</div>
           <div class="card-title">Por estanque</div>
           <ul style="list-style:none;padding-left:0;font-size:0.9rem;color:#4b5563;">
-            <li>E-001 · 37.5 kg</li>
-            <li>E-101 · 54.0 kg</li>
-            <li>E-205 · 25.0 kg</li>
+            @foreach (var item in _consumoHoy)
+            {
+              <li>@ObtenerNombreEstanque(item.EstanqueId) · @item.CantidadKg.ToString("0.##") kg</li>
+            }
           </ul>
         </article>
         <article class="card">
           <div class="card-label">Resumen general</div>
           <div class="card-title">Total del día</div>
           <p class="card-text">
-            Total alimentado hoy: <strong>116.5 kg</strong>. Esta vista se conectará más adelante con el inventario
-            de bodegas para actualizar el stock automáticamente.
+            Total alimentado hoy: <strong>@_totalKgHoy.ToString("0.##") kg</strong>.
           </p>
         </article>
       </div>
@@ -134,4 +130,60 @@
 
 @code {
   private string _tab = "lista";
+  private string _mensaje = string.Empty;
+  private bool _esError;
+
+  private List<Lote> _lotes = new();
+  private List<InventarioItem> _inventario = new();
+  private List<RegistroAlimentacion> _registrosHoy = new();
+  private List<ConsumoEstanqueDto> _consumoHoy = new();
+
+  private int _loteId;
+  private int _alimentoId;
+  private DateTime _fechaRegistro = DateTime.Today;
+  private TimeOnly _horaRegistro = new(8, 0);
+  private decimal _cantidadKg = 1m;
+  private decimal _totalKgHoy;
+
+  protected override void OnInitialized()
+  {
+    Refrescar();
+    if (_lotes.Count > 0) _loteId = _lotes[0].Id;
+    if (_inventario.Count > 0) _alimentoId = _inventario[0].Id;
+  }
+
+  private void Registrar()
+  {
+    var r = AlimentacionService.RegistrarAlimentacion(_loteId, _fechaRegistro, _horaRegistro.ToTimeSpan(), _alimentoId, _cantidadKg);
+    _mensaje = r.mensaje;
+    _esError = !r.exito;
+    if (!r.exito) return;
+    _cantidadKg = 1m;
+    _horaRegistro = new TimeOnly(8, 0);
+    Refrescar();
+    _tab = "lista";
+  }
+
+  private void Refrescar()
+  {
+    _lotes = LotesService.ObtenerActivos();
+    _inventario = AlimentacionService.ObtenerInventario().ToList();
+    _registrosHoy = AlimentacionService.ObtenerRegistrosPorFecha(DateTime.Today).ToList();
+    _consumoHoy = AlimentacionService.ObtenerConsumoPorEstanque(DateTime.Today).ToList();
+    _totalKgHoy = _consumoHoy.Sum(x => x.CantidadKg);
+  }
+
+  private static string ObtenerNombreEstanque(int estanqueId)
+      => estanqueId switch
+      {
+        1 => "E-001",
+        2 => "E-101",
+        3 => "E-205",
+        _ => $"E-{estanqueId}"
+      };
+
+  private string EstiloMensaje
+      => _esError
+          ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+          : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
 }

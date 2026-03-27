@@ -1,0 +1,151 @@
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Alertas_Service AlertasService
+@inject Lotes_Service LotesService
+
+<div class="section-container">
+  <div class="section-header">
+    <div class="section-kicker">Monitoreo</div>
+    <h1 class="section-title">Alertas operativas</h1>
+    <p class="section-text">Listado de alertas de calidad de agua, mortalidad y stock para seguimiento del Sprint 2.</p>
+  </div>
+
+  <div class="tabs">
+    <button type="button" class="tab-button @(_filtro == "pendientes" ? "tab-button--active" : "")" @onclick='() => CambiarFiltro("pendientes")'>Pendientes</button>
+    <button type="button" class="tab-button @(_filtro == "atendidas" ? "tab-button--active" : "")" @onclick='() => CambiarFiltro("atendidas")'>Atendidas</button>
+    <button type="button" class="tab-button @(_filtro == "todas" ? "tab-button--active" : "")" @onclick='() => CambiarFiltro("todas")'>Todas</button>
+  </div>
+
+  @if (!string.IsNullOrWhiteSpace(_mensaje))
+  {
+    <div style="@EstiloMensaje">@_mensaje</div>
+  }
+
+  <div class="section-grid">
+    <article class="card" style="grid-column: 1 / -1;">
+      <div class="card-label">Centro de alertas</div>
+      <div class="card-title">Eventos recientes</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+          <thead>
+            <tr style="background:#eef2ff;color:#111827;">
+              <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Fecha / hora</th>
+              <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+              <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Tipo</th>
+              <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Nivel</th>
+              <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Mensaje</th>
+              <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estado</th>
+              <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Accion</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var a in _alertas)
+            {
+              <tr>
+                <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@a.FechaHora.ToString("dd/MM/yyyy HH:mm")</td>
+                <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(a.IdLote)</td>
+                <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@a.Tipo</td>
+                <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">
+                  <span style="@ObtenerEstiloNivel(a.Nivel)">@ObtenerNivelTexto(a.Nivel)</span>
+                </td>
+                <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@a.Mensaje</td>
+                <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">
+                  <span style="display:inline-block;padding:0.2rem 0.45rem;border-radius:999px;font-size:0.75rem;@(a.Atendida ? "background:#dcfce7;color:#166534;" : "background:#fee2e2;color:#991b1b;")">
+                    @(a.Atendida ? "Atendida" : "Pendiente")
+                  </span>
+                </td>
+                <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">
+                  @if (!a.Atendida)
+                  {
+                    <button class="btn-login" style="padding:0.25rem 0.5rem;font-size:0.78rem;" type="button" @onclick="() => MarcarAtendida(a.IdAlerta)">
+                      Marcar atendida
+                    </button>
+                  }
+                  else
+                  {
+                    <span style="color:#6b7280;font-size:0.8rem;">-</span>
+                  }
+                </td>
+              </tr>
+            }
+            @if (_alertas.Count == 0)
+            {
+              <tr>
+                <td colspan="7" style="padding:0.75rem;color:#6b7280;">No hay alertas para el filtro seleccionado.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </div>
+</div>
+
+@code {
+  private List<AlertaDto> _alertas = new();
+  private string _filtro = "pendientes";
+  private string _mensaje = string.Empty;
+  private bool _esError;
+
+  protected override void OnInitialized()
+  {
+    CargarAlertas();
+  }
+
+  private void CambiarFiltro(string filtro)
+  {
+    _filtro = filtro;
+    _mensaje = string.Empty;
+    CargarAlertas();
+  }
+
+  private void CargarAlertas()
+  {
+    bool? atendida = _filtro switch
+    {
+      "pendientes" => false,
+      "atendidas" => true,
+      _ => null
+    };
+
+    _alertas = AlertasService.ObtenerAlertas(atendida, 200);
+  }
+
+  private void MarcarAtendida(int idAlerta)
+  {
+    var r = AlertasService.MarcarAtendida(idAlerta);
+    _esError = !r.exito;
+    _mensaje = r.mensaje;
+    CargarAlertas();
+  }
+
+  private string ObtenerCodigoLote(int? idLote)
+  {
+    if (!idLote.HasValue || idLote.Value <= 0)
+    {
+      return "—";
+    }
+
+    var lote = LotesService.ObtenerPorId(idLote.Value);
+    return lote?.Codigo ?? $"Lote {idLote.Value}";
+  }
+
+  private static string ObtenerNivelTexto(string? nivel)
+    => string.IsNullOrWhiteSpace(nivel) ? "Sin nivel" : nivel.Trim();
+
+  private static string ObtenerEstiloNivel(string? nivel)
+  {
+    var n = (nivel ?? string.Empty).Trim().ToLowerInvariant();
+    return n switch
+    {
+      "alta" => "display:inline-block;padding:0.2rem 0.45rem;border-radius:999px;background:#fecaca;color:#991b1b;font-size:0.75rem;",
+      "media" => "display:inline-block;padding:0.2rem 0.45rem;border-radius:999px;background:#fed7aa;color:#9a3412;font-size:0.75rem;",
+      "baja" => "display:inline-block;padding:0.2rem 0.45rem;border-radius:999px;background:#dbeafe;color:#1e40af;font-size:0.75rem;",
+      _ => "display:inline-block;padding:0.2rem 0.45rem;border-radius:999px;background:#e5e7eb;color:#374151;font-size:0.75rem;"
+    };
+  }
+
+  private string EstiloMensaje
+    => _esError
+      ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+      : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
+}

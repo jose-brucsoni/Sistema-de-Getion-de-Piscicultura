@@ -1,0 +1,59 @@
+Error 4060 "No se puede abrir la base de datos Piscicultura" + login fallido
+================================================================================
+
+Si en SSMS ejecutas SELECT @@SERVERNAME y ves algo como:
+  DESKTOP-...\\LOCALDB#...
+estás usando SQL Server LOCALDB, no localhost ni SQLEXPRESS.
+
+En ese caso la cadena de conexión debe usar:
+  Server=(localdb)\\MSSQLLocalDB
+(en JSON: "Server=(localdb)\\MSSQLLocalDB;..."  — una barra escapada como \\)
+
+La base Piscicultura y los scripts deben crearse conectado a ESA misma instancia LocalDB.
+
+--------------------------------------------------------------------------------
+
+Causa muy habitual: la aplicación y SSMS NO usan la misma INSTANCIA de SQL Server.
+
+- En appsettings suele figurar:  Server=localhost
+  Eso conecta a la instancia POR DEFECTO (si existe en tu PC).
+
+- SQL Server Express se instala casi siempre como:
+  Server=localhost\SQLEXPRESS
+
+Si creaste la base Piscicultura en SSMS conectado a "localhost\SQLEXPRESS",
+pero la app usa "localhost", estarás en otra instancia (sin esa base o sin permisos).
+
+--------------------------------------------------------------------------------
+Qué hacer
+--------------------------------------------------------------------------------
+
+1) En SSMS, en la misma ventana donde ves la base Piscicultura, ejecuta:
+
+   SELECT @@SERVERNAME AS InstanciaQueUsas;
+
+2) Copia EXACTAMENTE ese valor al connection string, en la parte Server=...
+
+   Ejemplos:
+   - Instancia por defecto:     Server=localhost
+   - Express:                   Server=localhost\SQLEXPRESS
+   - Nombre de máquina:         Server=NOMBREPC\SQLEXPRESS
+
+3) En JSON hay que escapar la barra:
+   "Server=localhost\\SQLEXPRESS;..."
+
+4) Archivo que usa el entorno de desarrollo:
+   Sistema de Getion de Piscicultura\...\appsettings.Development.json
+
+   El valor "DefaultConnection" debe coincidir con @@SERVERNAME (misma instancia).
+
+5) Prueba rápida: cambia temporalmente Database=master en la cadena.
+   Si con master conecta y con Piscicultura no, el problema es la base en ESA instancia
+   (no existe o sin permisos). Si ni master abre, la instancia o el servidor son incorrectos.
+
+--------------------------------------------------------------------------------
+Nota
+--------------------------------------------------------------------------------
+
+appsettings.json (base) puede seguir con localhost para otros entornos.
+En desarrollo, appsettings.Development.json SOBRESCRIBE la cadena.

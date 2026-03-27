@@ -1,3 +1,7 @@
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Crianza_Service CrianzaService
+@inject Catalogos_Service CatalogosService
+
 <div class="section-container">
   <div>
     <div class="tabs">
@@ -5,7 +9,14 @@
       <button type="button" class="tab-button @(_tab == "traslados" ? "tab-button--active" : "")" @onclick='() => _tab = "traslados"'>Traslados</button>
       <button type="button" class="tab-button @(_tab == "mortalidad" ? "tab-button--active" : "")" @onclick='() => _tab = "mortalidad"'>Mortalidad</button>
       <button type="button" class="tab-button @(_tab == "muestreos" ? "tab-button--active" : "")" @onclick='() => _tab = "muestreos"'>Muestreos</button>
+      <button type="button" class="tab-button @(_tab == "tratamientos" ? "tab-button--active" : "")" @onclick='() => _tab = "tratamientos"'>Tratamientos</button>
+      <button type="button" class="tab-button @(_tab == "biomasa" ? "tab-button--active" : "")" @onclick='() => _tab = "biomasa"'>Biomasa</button>
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(_mensaje))
+    {
+      <div style="@EstiloMensaje">@_mensaje</div>
+    }
 
     @if (_tab == "fases")
     {
@@ -26,30 +37,17 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-001</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Trucha arcoíris</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Fase 1 - Alevinaje</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-001</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">25</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">8</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">LOT-2026-004</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carpa común</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Fase 2 - Juveniles</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-101</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">90</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">80</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;">LOT-2025-023</td>
-                  <td style="padding:0.45rem 0.6rem;">Tilapia</td>
-                  <td style="padding:0.45rem 0.6rem;">Fase 4 - Engorde final</td>
-                  <td style="padding:0.45rem 0.6rem;">E-205</td>
-                  <td style="padding:0.45rem 0.6rem;">320</td>
-                  <td style="padding:0.45rem 0.6rem;">320</td>
-                </tr>
+                @foreach (var l in _lotes)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@l.Codigo</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEspecie(l.EspecieId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreFase(l.FaseActual)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEstanque(l.EstanqueId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@((DateTime.Today - l.FechaSiembra.Date).Days)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@(ObtenerPesoPromedioUltimo(l.IdLote)?.ToString("0.##") ?? "—")</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -66,55 +64,84 @@
           <form class="contact-form">
             <div class="field">
               <label for="traslado-lote">Lote</label>
-              <select id="traslado-lote">
-                <option>LOT-2026-001</option>
-                <option>LOT-2026-004</option>
-                <option>LOT-2025-023</option>
+              <select id="traslado-lote" @bind="_trasladoLoteId" @bind:after="CargarDatosTrasladoPorLote">
+                @foreach (var l in _lotes)
+                {
+                  <option value="@l.IdLote">@l.Codigo</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="traslado-fase-actual">Fase actual</label>
-              <input id="traslado-fase-actual" type="text" placeholder="Se mostrará automáticamente" />
+              <input id="traslado-fase-actual" type="text" value="@_trasladoFaseActualTexto" disabled />
             </div>
             <div class="field">
               <label for="traslado-fase-destino">Fase destino</label>
-              <select id="traslado-fase-destino">
-                <option>Fase 2 - Juveniles</option>
-                <option>Fase 3 - Pre-engorde</option>
-                <option>Fase 4 - Engorde final</option>
+              <select id="traslado-fase-destino" @bind="_trasladoFaseDestinoId">
+                <option value="1">Alevinaje</option>
+                <option value="2">Juveniles</option>
+                <option value="3">Pre-engorde</option>
+                <option value="4">Engorde final</option>
               </select>
             </div>
             <div class="field">
               <label for="traslado-estanque-destino">Estanque destino</label>
-              <select id="traslado-estanque-destino">
-                <option>E-101</option>
-                <option>E-205</option>
+              <select id="traslado-estanque-destino" @bind="_trasladoEstanqueDestinoId">
+                @foreach (var e in _estanques)
+                {
+                  <option value="@e.IdEstanque">@e.Codigo</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="traslado-cantidad">Cantidad trasladada</label>
-              <input id="traslado-cantidad" type="number" min="0" />
+              <input id="traslado-cantidad" type="number" min="1" @bind="_trasladoCantidad" />
             </div>
             <div class="field">
               <label for="traslado-mortalidad">Mortalidad en traslado</label>
-              <input id="traslado-mortalidad" type="number" min="0" />
+              <input id="traslado-mortalidad" type="number" min="0" @bind="_trasladoMortalidad" />
             </div>
             <div class="field">
               <label for="traslado-peso">Peso promedio (g)</label>
-              <input id="traslado-peso" type="number" min="0" step="0.1" />
+              <input id="traslado-peso" type="number" min="0" step="0.1" @bind="_trasladoPesoPromedio" />
             </div>
             <div class="field">
               <label for="traslado-fecha">Fecha</label>
-              <input id="traslado-fecha" type="date" />
+              <input id="traslado-fecha" type="date" @bind="_trasladoFecha" />
             </div>
             <div class="field">
               <label for="traslado-hora">Hora</label>
-              <input id="traslado-hora" type="time" />
+              <input id="traslado-hora" type="time" @bind="_trasladoHora" />
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Registrar traslado</button>
+              <button class="btn-login" type="button" @onclick="RegistrarTraslado">Registrar traslado</button>
             </div>
           </form>
+          <div style="overflow-x:auto;margin-top:1rem;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.86rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Fecha</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Origen</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Destino</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Cant.</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (var t in _traslados)
+                {
+                  <tr>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@t.FechaTraslado.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(t.IdLote)</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEstanque(t.IdEstanqueOrigen)</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEstanque(t.IdEstanqueDestino)</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@t.CantidadTrasladada</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </article>
       </div>
     }
@@ -128,23 +155,24 @@
           <form class="contact-form">
             <div class="field">
               <label for="mort-lote">Lote</label>
-              <select id="mort-lote">
-                <option>LOT-2026-001</option>
-                <option>LOT-2026-004</option>
-                <option>LOT-2025-023</option>
+              <select id="mort-lote" @bind="_mortalidadLoteId">
+                @foreach (var l in _lotes)
+                {
+                  <option value="@l.IdLote">@l.Codigo</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="mort-fecha">Fecha</label>
-              <input id="mort-fecha" type="date" />
+              <input id="mort-fecha" type="date" @bind="_mortalidadFecha" />
             </div>
             <div class="field">
               <label for="mort-cantidad">Cantidad de peces</label>
-              <input id="mort-cantidad" type="number" min="0" />
+              <input id="mort-cantidad" type="number" min="1" @bind="_mortalidadCantidad" />
             </div>
             <div class="field">
               <label for="mort-causa">Causa</label>
-              <select id="mort-causa">
+              <select id="mort-causa" @bind="_mortalidadCausa">
                 <option>Enfermedad</option>
                 <option>Estrés</option>
                 <option>Depredadores</option>
@@ -154,12 +182,35 @@
             </div>
             <div class="field">
               <label for="mort-observaciones">Observaciones</label>
-              <textarea id="mort-observaciones"></textarea>
+              <textarea id="mort-observaciones" @bind="_mortalidadObservaciones"></textarea>
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Registrar mortalidad</button>
+              <button class="btn-login" type="button" @onclick="RegistrarMortalidad">Registrar mortalidad</button>
             </div>
           </form>
+          <div style="overflow-x:auto;margin-top:1rem;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.86rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Fecha</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Cantidad</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Causa</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (var m in _mortalidades)
+                {
+                  <tr>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@m.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(m.IdLote)</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@m.Cantidad</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@(m.Causa ?? "—")</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </article>
       </div>
     }
@@ -173,32 +224,158 @@
           <form class="contact-form">
             <div class="field">
               <label for="muestra-lote">Lote</label>
-              <select id="muestra-lote">
-                <option>LOT-2026-001</option>
-                <option>LOT-2026-004</option>
-                <option>LOT-2025-023</option>
+              <select id="muestra-lote" @bind="_muestreoLoteId">
+                @foreach (var l in _lotes)
+                {
+                  <option value="@l.IdLote">@l.Codigo</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="muestra-fecha">Fecha</label>
-              <input id="muestra-fecha" type="date" />
+              <input id="muestra-fecha" type="date" @bind="_muestreoFecha" />
             </div>
             <div class="field">
               <label for="muestra-cantidad">Cantidad de peces muestreados</label>
-              <input id="muestra-cantidad" type="number" min="1" />
+              <input id="muestra-cantidad" type="number" min="1" @bind="_muestreoCantidad" />
             </div>
             <div class="field">
               <label for="muestra-peso">Peso promedio (g)</label>
-              <input id="muestra-peso" type="number" min="0" step="0.1" />
+              <input id="muestra-peso" type="number" min="0" step="0.1" @bind="_muestreoPesoPromedio" />
             </div>
             <div class="field">
               <label for="muestra-dispersion">Dispersión de pesos</label>
-              <input id="muestra-dispersion" type="text" placeholder="Ej. 280–340" />
+              <input id="muestra-dispersion" type="text" placeholder="Ej. 280–340" @bind="_muestreoDispersion" />
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Guardar muestreo</button>
+              <button class="btn-login" type="button" @onclick="RegistrarMuestreo">Guardar muestreo</button>
             </div>
           </form>
+          <div style="overflow-x:auto;margin-top:1rem;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.86rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Fecha</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Muestra</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Peso prom.</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (var m in _muestreos)
+                {
+                  <tr>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@m.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(m.IdLote)</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@m.CantidadMuestra</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@m.PesoPromedio.ToString("0.##") g</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "tratamientos")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Tratamientos</div>
+          <div class="card-title">Registro y seguimiento por lote (HU-013/HU-014)</div>
+          <form class="contact-form">
+            <div class="field">
+              <label for="trat-lote">Lote</label>
+              <select id="trat-lote" @bind="_tratamientoLoteId">
+                @foreach (var l in _lotes)
+                {
+                  <option value="@l.IdLote">@l.Codigo</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label for="trat-fecha">Fecha</label>
+              <input id="trat-fecha" type="date" @bind="_tratamientoFecha" />
+            </div>
+            <div class="field">
+              <label for="trat-hora">Hora</label>
+              <input id="trat-hora" type="time" @bind="_tratamientoHora" />
+            </div>
+            <div class="field">
+              <label for="trat-tipo">Tipo</label>
+              <input id="trat-tipo" type="text" placeholder="Ej. Probiótico / Antibiótico" @bind="_tratamientoTipo" />
+            </div>
+            <div class="field">
+              <label for="trat-dosis">Dosis</label>
+              <input id="trat-dosis" type="number" min="0.001" step="0.001" @bind="_tratamientoDosis" />
+            </div>
+            <div class="field">
+              <label for="trat-obs">Observaciones</label>
+              <textarea id="trat-obs" @bind="_tratamientoObservaciones"></textarea>
+            </div>
+            <div class="field">
+              <button class="btn-login" type="button" @onclick="RegistrarTratamiento">Registrar tratamiento</button>
+            </div>
+          </form>
+          <div style="overflow-x:auto;margin-top:1rem;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.86rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Fecha</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Tipo</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Dosis</th>
+                  <th style="text-align:left;padding:0.4rem 0.5rem;border-bottom:1px solid #e5e7eb;">Observación</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (var t in _tratamientos)
+                {
+                  <tr>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@t.FechaAplicacion.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(t.IdLote)</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@t.Tipo</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@t.Dosis.ToString("0.###")</td>
+                    <td style="padding:0.4rem 0.5rem;border-bottom:1px solid #f3f4f6;">@(string.IsNullOrWhiteSpace(t.Observacion) ? "—" : t.Observacion)</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "biomasa")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Biomasa estimada</div>
+          <div class="card-title">Registros automáticos desde muestreo (HU-016)</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Fecha</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Cantidad peces</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Biomasa (kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (var b in _biomasas)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@b.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(b.IdLote)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@b.CantidadPeces</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@b.BiomasaEstimadaKg.ToString("0.###")</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </article>
       </div>
     }
@@ -207,4 +384,163 @@
 
 @code {
   private string _tab = "fases";
+  private string _mensaje = string.Empty;
+  private bool _esError;
+
+  private List<LoteCrianzaDto> _lotes = new();
+  private List<EstanqueResumenDto> _estanques = new();
+  private List<EspecieResumenDto> _especies = new();
+  private List<MortalidadDto> _mortalidades = new();
+  private List<MuestreoDto> _muestreos = new();
+  private List<TratamientoDto> _tratamientos = new();
+  private List<TrasladoDto> _traslados = new();
+  private List<BiomasaDto> _biomasas = new();
+
+  private int _trasladoLoteId;
+  private int _trasladoEstanqueDestinoId;
+  private int _trasladoFaseDestinoId = 2;
+  private int _trasladoCantidad = 1;
+  private int _trasladoMortalidad;
+  private decimal? _trasladoPesoPromedio;
+  private DateTime _trasladoFecha = DateTime.Today;
+  private TimeOnly _trasladoHora = new(DateTime.Now.Hour, DateTime.Now.Minute);
+  private string _trasladoFaseActualTexto = "—";
+
+  private int _mortalidadLoteId;
+  private DateTime _mortalidadFecha = DateTime.Today;
+  private int _mortalidadCantidad = 1;
+  private string _mortalidadCausa = "Enfermedad";
+  private string _mortalidadObservaciones = string.Empty;
+
+  private int _muestreoLoteId;
+  private DateTime _muestreoFecha = DateTime.Today;
+  private int _muestreoCantidad = 30;
+  private decimal _muestreoPesoPromedio = 10;
+  private string _muestreoDispersion = string.Empty;
+
+  private int _tratamientoLoteId;
+  private DateTime _tratamientoFecha = DateTime.Today;
+  private TimeOnly _tratamientoHora = new(DateTime.Now.Hour, DateTime.Now.Minute);
+  private string _tratamientoTipo = string.Empty;
+  private decimal _tratamientoDosis = 1m;
+  private string _tratamientoObservaciones = string.Empty;
+
+  protected override void OnInitialized()
+  {
+    RefrescarTodo();
+    if (_lotes.Count > 0)
+    {
+      _trasladoLoteId = _lotes[0].IdLote;
+      _mortalidadLoteId = _lotes[0].IdLote;
+      _muestreoLoteId = _lotes[0].IdLote;
+      _tratamientoLoteId = _lotes[0].IdLote;
+      CargarDatosTrasladoPorLote();
+    }
+
+    if (_estanques.Count > 0)
+    {
+      _trasladoEstanqueDestinoId = _estanques[0].IdEstanque;
+    }
+  }
+
+  private void RegistrarMortalidad()
+  {
+    var fechaHora = _mortalidadFecha.Date + new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0);
+    var r = CrianzaService.RegistrarMortalidad(_mortalidadLoteId, fechaHora, _mortalidadCantidad, _mortalidadCausa, _mortalidadObservaciones);
+    MostrarMensaje(r.mensaje, !r.exito);
+    if (r.exito) RefrescarTodo();
+  }
+
+  private void RegistrarMuestreo()
+  {
+    var fechaHora = _muestreoFecha.Date + new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0);
+    var r = CrianzaService.RegistrarMuestreo(_muestreoLoteId, fechaHora, _muestreoCantidad, _muestreoPesoPromedio, _muestreoDispersion);
+    MostrarMensaje(r.mensaje, !r.exito);
+    if (r.exito) RefrescarTodo();
+  }
+
+  private void RegistrarTraslado()
+  {
+    var fechaHora = _trasladoFecha.Date + _trasladoHora.ToTimeSpan();
+    var r = CrianzaService.RegistrarTraslado(
+      _trasladoLoteId,
+      _trasladoEstanqueDestinoId,
+      _trasladoFaseDestinoId,
+      fechaHora,
+      _trasladoCantidad,
+      _trasladoMortalidad,
+      _trasladoPesoPromedio);
+    MostrarMensaje(r.mensaje, !r.exito);
+    if (r.exito) RefrescarTodo();
+  }
+
+  private void RegistrarTratamiento()
+  {
+    var fechaHora = _tratamientoFecha.Date + _tratamientoHora.ToTimeSpan();
+    var r = CrianzaService.RegistrarTratamiento(
+      _tratamientoLoteId,
+      fechaHora,
+      _tratamientoTipo,
+      _tratamientoDosis,
+      _tratamientoObservaciones);
+    MostrarMensaje(r.mensaje, !r.exito);
+    if (r.exito)
+    {
+      _tratamientoTipo = string.Empty;
+      _tratamientoDosis = 1m;
+      _tratamientoObservaciones = string.Empty;
+      RefrescarTodo();
+    }
+  }
+
+  private void RefrescarTodo()
+  {
+    _lotes = CrianzaService.ObtenerLotesActivos();
+    _estanques = CatalogosService.ObtenerEstanques();
+    _especies = CatalogosService.ObtenerEspecies();
+    _mortalidades = CrianzaService.ObtenerMortalidadReciente();
+    _muestreos = CrianzaService.ObtenerMuestreosRecientes();
+    _tratamientos = CrianzaService.ObtenerTratamientosRecientes();
+    _traslados = CrianzaService.ObtenerTrasladosRecientes();
+    _biomasas = CrianzaService.ObtenerBiomasaReciente();
+  }
+
+  private void CargarDatosTrasladoPorLote()
+  {
+    var l = _lotes.FirstOrDefault(x => x.IdLote == _trasladoLoteId);
+    _trasladoFaseActualTexto = l is null ? "—" : ObtenerNombreFase(l.FaseActual);
+  }
+
+  private decimal? ObtenerPesoPromedioUltimo(int idLote)
+      => _muestreos.FirstOrDefault(x => x.IdLote == idLote)?.PesoPromedio;
+
+  private string ObtenerCodigoLote(int idLote)
+      => _lotes.FirstOrDefault(x => x.IdLote == idLote)?.Codigo ?? $"Lote {idLote}";
+
+  private string ObtenerNombreEspecie(int idEspecie)
+      => _especies.FirstOrDefault(x => x.IdEspecie == idEspecie)?.Nombre ?? $"Especie {idEspecie}";
+
+  private string ObtenerNombreEstanque(int idEstanque)
+      => _estanques.FirstOrDefault(x => x.IdEstanque == idEstanque)?.Codigo ?? $"E-{idEstanque}";
+
+  private static string ObtenerNombreFase(int fase)
+      => fase switch
+      {
+        1 => "Alevinaje",
+        2 => "Juveniles",
+        3 => "Pre-engorde",
+        4 => "Engorde final",
+        _ => $"Fase {fase}"
+      };
+
+  private void MostrarMensaje(string mensaje, bool esError)
+  {
+    _mensaje = mensaje;
+    _esError = esError;
+  }
+
+  private string EstiloMensaje
+      => _esError
+          ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+          : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
 }

@@ -1,3 +1,6 @@
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Catalogos_Service CatalogosService
+
 <div class="section-container">
   <div>
     <div class="tabs">
@@ -5,6 +8,11 @@
       <button type="button" class="tab-button @(_tab == "crear" ? "tab-button--active" : "")" @onclick='() => _tab = "crear"'>Crear</button>
       <button type="button" class="tab-button @(_tab == "editar" ? "tab-button--active" : "")" @onclick='() => _tab = "editar"'>Editar</button>
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(_mensaje))
+    {
+      <div style="@EstiloMensaje">@_mensaje</div>
+    }
 
     @if (_tab == "lista")
     {
@@ -21,34 +29,21 @@
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">pH óptimo</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Oxígeno mín. (mg/L)</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Peso comercial (g)</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Alimentación recomendada</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Trucha arcoíris</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">12 – 18</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">6.5 – 8.0</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">&gt; 6,0</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">250 – 400</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Alta proteína, fases 1–4 según curva</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carpa común</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">18 – 26</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">6.5 – 8.5</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">&gt; 5,0</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">300 – 450</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Pienso de crecimiento y engorde</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;">Tilapia</td>
-                  <td style="padding:0.45rem 0.6rem;">24 – 30</td>
-                  <td style="padding:0.45rem 0.6rem;">6.0 – 8.5</td>
-                  <td style="padding:0.45rem 0.6rem;">&gt; 5,0</td>
-                  <td style="padding:0.45rem 0.6rem;">250 – 400</td>
-                  <td style="padding:0.45rem 0.6rem;">Alimento flotante por fases</td>
-                </tr>
+                @foreach (var e in _especies)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@e.Nombre</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@($"{e.TempMin:0.##} – {e.TempMax:0.##}")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@($"{e.PhMin:0.##} – {e.PhMax:0.##}")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@($"> {e.OxigenoMin:0.##}")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@($"{e.PesoComercialMin:0.##} – {e.PesoComercialMax:0.##}")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:@(e.Activo ? "#16a34a" : "#f97316");">@(e.Activo ? "Activo" : "Inactivo")</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -65,30 +60,38 @@
           <form class="contact-form">
             <div class="field">
               <label for="nueva-especie-nombre">Nombre de la especie</label>
-              <input id="nueva-especie-nombre" type="text" placeholder="Ej. Trucha arcoíris" />
+              <input id="nueva-especie-nombre" type="text" @bind="_nuevoNombre" placeholder="Ej. Trucha arcoíris" />
             </div>
             <div class="field">
-              <label for="nueva-especie-temp">Temperatura óptima (°C)</label>
-              <input id="nueva-especie-temp" type="text" placeholder="Ej. 12 – 18" />
+              <label for="nueva-especie-temp-min">Temp. mínima (°C)</label>
+              <input id="nueva-especie-temp-min" type="number" step="0.01" @bind="_nuevoTempMin" />
             </div>
             <div class="field">
-              <label for="nueva-especie-ph">pH óptimo</label>
-              <input id="nueva-especie-ph" type="text" placeholder="Ej. 6.5 – 8.0" />
+              <label for="nueva-especie-temp-max">Temp. máxima (°C)</label>
+              <input id="nueva-especie-temp-max" type="number" step="0.01" @bind="_nuevoTempMax" />
+            </div>
+            <div class="field">
+              <label for="nueva-especie-ph-min">pH mínimo</label>
+              <input id="nueva-especie-ph-min" type="number" step="0.01" @bind="_nuevoPhMin" />
+            </div>
+            <div class="field">
+              <label for="nueva-especie-ph-max">pH máximo</label>
+              <input id="nueva-especie-ph-max" type="number" step="0.01" @bind="_nuevoPhMax" />
             </div>
             <div class="field">
               <label for="nueva-especie-oxigeno">Oxígeno mínimo (mg/L)</label>
-              <input id="nueva-especie-oxigeno" type="number" min="0" step="0.1" placeholder="Ej. 6.0" />
+              <input id="nueva-especie-oxigeno" type="number" min="0" step="0.01" @bind="_nuevoOxigenoMin" />
             </div>
             <div class="field">
-              <label for="nueva-especie-peso">Rango de peso comercial (g)</label>
-              <input id="nueva-especie-peso" type="text" placeholder="Ej. 250 – 400" />
+              <label for="nueva-especie-peso-min">Peso comercial mínimo (g)</label>
+              <input id="nueva-especie-peso-min" type="number" min="0" step="0.01" @bind="_nuevoPesoMin" />
             </div>
             <div class="field">
-              <label for="nueva-especie-alimentacion">Alimentación recomendada por fase</label>
-              <textarea id="nueva-especie-alimentacion" placeholder="Describir tipo de alimento para cada fase..."></textarea>
+              <label for="nueva-especie-peso-max">Peso comercial máximo (g)</label>
+              <input id="nueva-especie-peso-max" type="number" min="0" step="0.01" @bind="_nuevoPesoMax" />
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Guardar especie</button>
+              <button class="btn-login" type="button" @onclick="GuardarNueva">Guardar especie</button>
             </div>
           </form>
         </article>
@@ -104,34 +107,49 @@
           <form class="contact-form">
             <div class="field">
               <label for="editar-especie">Especie</label>
-              <select id="editar-especie">
-                <option>Trucha arcoíris</option>
-                <option>Carpa común</option>
-                <option>Tilapia</option>
+              <select id="editar-especie" @bind="_editarId" @bind:after="CargarEdicion">
+                <option value="0">-- Seleccione --</option>
+                @foreach (var e in _especies)
+                {
+                  <option value="@e.IdEspecie">@e.Nombre</option>
+                }
               </select>
             </div>
             <div class="field">
-              <label for="editar-especie-temp">Temperatura óptima (°C)</label>
-              <input id="editar-especie-temp" type="text" placeholder="Ej. 12 – 18" />
+              <label for="editar-especie-nombre">Nombre</label>
+              <input id="editar-especie-nombre" type="text" @bind="_editarNombre" />
             </div>
             <div class="field">
-              <label for="editar-especie-ph">pH óptimo</label>
-              <input id="editar-especie-ph" type="text" placeholder="Ej. 6.5 – 8.0" />
+              <label for="editar-especie-temp-min">Temp. mínima (°C)</label>
+              <input id="editar-especie-temp-min" type="number" step="0.01" @bind="_editarTempMin" />
+            </div>
+            <div class="field">
+              <label for="editar-especie-temp-max">Temp. máxima (°C)</label>
+              <input id="editar-especie-temp-max" type="number" step="0.01" @bind="_editarTempMax" />
+            </div>
+            <div class="field">
+              <label for="editar-especie-ph-min">pH mínimo</label>
+              <input id="editar-especie-ph-min" type="number" step="0.01" @bind="_editarPhMin" />
+            </div>
+            <div class="field">
+              <label for="editar-especie-ph-max">pH máximo</label>
+              <input id="editar-especie-ph-max" type="number" step="0.01" @bind="_editarPhMax" />
             </div>
             <div class="field">
               <label for="editar-especie-oxigeno">Oxígeno mínimo (mg/L)</label>
-              <input id="editar-especie-oxigeno" type="number" min="0" step="0.1" placeholder="Ej. 6.0" />
+              <input id="editar-especie-oxigeno" type="number" min="0" step="0.01" @bind="_editarOxigenoMin" />
             </div>
             <div class="field">
-              <label for="editar-especie-peso">Rango de peso comercial (g)</label>
-              <input id="editar-especie-peso" type="text" placeholder="Ej. 250 – 400" />
+              <label for="editar-especie-peso-min">Peso comercial mínimo (g)</label>
+              <input id="editar-especie-peso-min" type="number" min="0" step="0.01" @bind="_editarPesoMin" />
             </div>
             <div class="field">
-              <label for="editar-especie-alimentacion">Alimentación recomendada por fase</label>
-              <textarea id="editar-especie-alimentacion" placeholder="Actualizar descripción de la alimentación..."></textarea>
+              <label for="editar-especie-peso-max">Peso comercial máximo (g)</label>
+              <input id="editar-especie-peso-max" type="number" min="0" step="0.01" @bind="_editarPesoMax" />
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Guardar cambios</button>
+              <button class="btn-login" type="button" @onclick="GuardarEdicion">Guardar cambios</button>
+              <button class="btn-login" style="margin-left:0.6rem;background:#991b1b;" type="button" @onclick="DesactivarSeleccionada">Desactivar</button>
             </div>
           </form>
         </article>
@@ -142,4 +160,118 @@
 
 @code {
   private string _tab = "lista";
+  private List<EspecieResumenDto> _especies = new();
+  private string _mensaje = string.Empty;
+  private bool _esError;
+
+  private string _nuevoNombre = string.Empty;
+  private decimal _nuevoTempMin;
+  private decimal _nuevoTempMax;
+  private decimal _nuevoPhMin;
+  private decimal _nuevoPhMax;
+  private decimal _nuevoOxigenoMin;
+  private decimal _nuevoPesoMin;
+  private decimal _nuevoPesoMax;
+
+  private int _editarId;
+  private string _editarNombre = string.Empty;
+  private decimal _editarTempMin;
+  private decimal _editarTempMax;
+  private decimal _editarPhMin;
+  private decimal _editarPhMax;
+  private decimal _editarOxigenoMin;
+  private decimal _editarPesoMin;
+  private decimal _editarPesoMax;
+
+  protected override void OnInitialized()
+  {
+    Refrescar();
+  }
+
+  private void GuardarNueva()
+  {
+    try
+    {
+      var r = CatalogosService.CrearEspecie(_nuevoNombre, _nuevoTempMin, _nuevoTempMax, _nuevoPhMin, _nuevoPhMax, _nuevoOxigenoMin, _nuevoPesoMin, _nuevoPesoMax);
+      MostrarMensaje(r.mensaje, !r.exito);
+      if (!r.exito) return;
+
+      _nuevoNombre = string.Empty;
+      _nuevoTempMin = 0;
+      _nuevoTempMax = 0;
+      _nuevoPhMin = 0;
+      _nuevoPhMax = 0;
+      _nuevoOxigenoMin = 0;
+      _nuevoPesoMin = 0;
+      _nuevoPesoMax = 0;
+      Refrescar();
+      _tab = "lista";
+    }
+    catch (Exception ex)
+    {
+      MostrarMensaje($"Error al crear especie: {ex.Message}", true);
+    }
+  }
+
+  private void GuardarEdicion()
+  {
+    try
+    {
+      var r = CatalogosService.ActualizarEspecie(_editarId, _editarNombre, _editarTempMin, _editarTempMax, _editarPhMin, _editarPhMax, _editarOxigenoMin, _editarPesoMin, _editarPesoMax);
+      MostrarMensaje(r.mensaje, !r.exito);
+      if (!r.exito) return;
+      Refrescar();
+      _tab = "lista";
+    }
+    catch (Exception ex)
+    {
+      MostrarMensaje($"Error al actualizar especie: {ex.Message}", true);
+    }
+  }
+
+  private void DesactivarSeleccionada()
+  {
+    try
+    {
+      var r = CatalogosService.DesactivarEspecie(_editarId);
+      MostrarMensaje(r.mensaje, !r.exito);
+      if (!r.exito) return;
+      Refrescar();
+      _tab = "lista";
+    }
+    catch (Exception ex)
+    {
+      MostrarMensaje($"Error al desactivar especie: {ex.Message}", true);
+    }
+  }
+
+  private void CargarEdicion()
+  {
+    var x = _especies.FirstOrDefault(s => s.IdEspecie == _editarId);
+    if (x is null) return;
+    _editarNombre = x.Nombre;
+    _editarTempMin = x.TempMin;
+    _editarTempMax = x.TempMax;
+    _editarPhMin = x.PhMin;
+    _editarPhMax = x.PhMax;
+    _editarOxigenoMin = x.OxigenoMin;
+    _editarPesoMin = x.PesoComercialMin;
+    _editarPesoMax = x.PesoComercialMax;
+  }
+
+  private void Refrescar()
+  {
+    _especies = CatalogosService.ObtenerEspecies();
+  }
+
+  private void MostrarMensaje(string mensaje, bool esError)
+  {
+    _mensaje = mensaje;
+    _esError = esError;
+  }
+
+  private string EstiloMensaje
+      => _esError
+          ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+          : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
 }

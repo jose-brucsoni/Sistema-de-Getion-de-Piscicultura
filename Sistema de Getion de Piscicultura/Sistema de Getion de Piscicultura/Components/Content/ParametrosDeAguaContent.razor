@@ -1,9 +1,16 @@
+@using Sistema_de_Getion_de_Piscicultura.Modelos
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject ParametrosAgua_Service ParametrosService
+@inject Lotes_Service LotesService
+@inject Catalogos_Service CatalogosService
+
 <div class="section-container">
   <div>
     <div class="tabs">
-      <button type="button" class="tab-button @(_tab == "lista" ? "tab-button--active" : "")" @onclick='() => _tab = "lista"'>Lista</button>
+      <button type="button" class="tab-button @(_tab == "lista" ? "tab-button--active" : "")" @onclick='() => { _tab = "lista"; RefrescarLista(); }'>Lista</button>
       <button type="button" class="tab-button @(_tab == "registrar" ? "tab-button--active" : "")" @onclick='() => _tab = "registrar"'>Registrar</button>
-      <button type="button" class="tab-button @(_tab == "historial" ? "tab-button--active" : "")" @onclick='() => _tab = "historial"'>Historial</button>
+      <button type="button" class="tab-button @(_tab == "editar" ? "tab-button--active" : "")" @onclick='() => { _tab = "editar"; CargarEdicionSiHaySeleccion(); }'>Editar</button>
+      <button type="button" class="tab-button @(_tab == "historial" ? "tab-button--active" : "")" @onclick='() => { _tab = "historial"; AplicarFiltroHistorial(); }'>Historial</button>
     </div>
 
     @if (_tab == "lista")
@@ -11,52 +18,65 @@
       <div class="section-grid">
         <article class="card" style="grid-column: 1 / -1;">
           <div class="card-label">Registros recientes</div>
-          <div class="card-title">Parámetros por estanque</div>
+          <div class="card-title">Parámetros del agua por lote y estanque</div>
+          @if (!string.IsNullOrWhiteSpace(_mensaje))
+          {
+            <div style="@EstiloMensaje">
+              @_mensaje
+            </div>
+          }
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
               <thead>
                 <tr style="background:#eef2ff;color:#111827;">
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Fecha / hora</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Lote</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estanque</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Temp. (°C)</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">pH</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Oxígeno (mg/L)</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Amonio (mg/L)</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Nitritos (mg/L)</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Turbidez (NTU)</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Amonio</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Nitritos</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Turbidez</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Alerta</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026 07:30</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-001</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">19.2</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">7.1</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">7.0</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">0.10</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">0.02</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">12</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026 07:45</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">E-101</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">20.5</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">7.4</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">6.4</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">0.15</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">0.03</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">10</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;">17/03/2026 08:00</td>
-                  <td style="padding:0.45rem 0.6rem;">E-205</td>
-                  <td style="padding:0.45rem 0.6rem;">21.0</td>
-                  <td style="padding:0.45rem 0.6rem;">7.0</td>
-                  <td style="padding:0.45rem 0.6rem;">6.0</td>
-                  <td style="padding:0.45rem 0.6rem;">0.20</td>
-                  <td style="padding:0.45rem 0.6rem;">0.05</td>
-                  <td style="padding:0.45rem 0.6rem;">15</td>
-                </tr>
+                @foreach (var r in _lista)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(r.LoteId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEstanquePorLote(r.LoteId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Temperatura.ToString("0.0")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Ph.ToString("0.0")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.OxigenoDisuelto.ToString("0.0")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Amonio.ToString("0.00")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Nitritos.ToString("0.00")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Turbidez.ToString("0.0")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">
+                      @if (EstaFueraRango(r))
+                      {
+                        <span style="display:inline-block;padding:0.15rem 0.4rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.75rem;">@ObtenerResumenAlerta(r)</span>
+                      }
+                      else
+                      {
+                        <span style="display:inline-block;padding:0.15rem 0.4rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.75rem;">OK</span>
+                      }
+                    </td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;white-space:nowrap;">
+                      <button class="btn-login" style="padding:0.25rem 0.5rem;font-size:0.78rem;margin-right:0.35rem;" type="button" @onclick="() => IrAEditar(r.Id)">Editar</button>
+                      <button class="btn-login" style="padding:0.25rem 0.5rem;font-size:0.78rem;background:#991b1b;" type="button" @onclick="() => SolicitarEliminar(r.Id)">Eliminar</button>
+                    </td>
+                  </tr>
+                }
+                @if (_lista.Count == 0)
+                {
+                  <tr>
+                    <td colspan="11" style="padding:0.75rem;color:#6b7280;">No hay registros. Use la pestaña Registrar para agregar mediciones.</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -69,55 +89,150 @@
       <div class="section-grid">
         <article class="card" style="grid-column: 1 / -1;">
           <div class="card-label">Nuevo registro</div>
-          <div class="card-title">Registrar parámetros diarios</div>
+          <div class="card-title">Registrar parámetros diarios (HU-009)</div>
+          @if (!string.IsNullOrWhiteSpace(_mensajeRegistrar))
+          {
+            <div style="@EstiloMensajeRegistrar">
+              @_mensajeRegistrar
+            </div>
+          }
           <form class="contact-form">
             <div class="field">
-              <label for="param-estanque">Estanque</label>
-              <select id="param-estanque">
-                <option>E-001</option>
-                <option>E-101</option>
-                <option>E-205</option>
+              <label for="param-lote">Lote</label>
+              <select id="param-lote" @bind="_nuevo.LoteId">
+                @foreach (var l in _lotesActivos)
+                {
+                  <option value="@l.Id">@l.Codigo — @ObtenerNombreEstanque(l.EstanqueId)</option>
+                }
               </select>
+              <small style="color:#6b7280;">El estanque se obtiene del lote seleccionado (trazabilidad RF3).</small>
             </div>
             <div class="field">
               <label for="param-fecha">Fecha</label>
-              <input id="param-fecha" type="date" />
+              <input id="param-fecha" type="date" @bind="_nuevoFecha" />
             </div>
             <div class="field">
               <label for="param-hora">Hora</label>
-              <input id="param-hora" type="time" />
+              <input id="param-hora" type="time" @bind="_nuevoHora" />
             </div>
             <div class="field">
               <label for="param-temp">Temperatura (°C)</label>
-              <input id="param-temp" type="number" step="0.1" />
+              <input id="param-temp" type="number" step="0.1" @bind="_nuevo.Temperatura" />
             </div>
             <div class="field">
               <label for="param-ph">pH</label>
-              <input id="param-ph" type="number" step="0.1" />
+              <input id="param-ph" type="number" step="0.1" @bind="_nuevo.Ph" />
             </div>
             <div class="field">
               <label for="param-oxigeno">Oxígeno disuelto (mg/L)</label>
-              <input id="param-oxigeno" type="number" step="0.1" />
+              <input id="param-oxigeno" type="number" step="0.1" @bind="_nuevo.OxigenoDisuelto" />
             </div>
             <div class="field">
               <label for="param-amonio">Amonio (mg/L)</label>
-              <input id="param-amonio" type="number" step="0.01" />
+              <input id="param-amonio" type="number" step="0.01" @bind="_nuevo.Amonio" />
             </div>
             <div class="field">
               <label for="param-nitritos">Nitritos (mg/L)</label>
-              <input id="param-nitritos" type="number" step="0.01" />
+              <input id="param-nitritos" type="number" step="0.01" @bind="_nuevo.Nitritos" />
             </div>
             <div class="field">
               <label for="param-turbidez">Turbidez (NTU)</label>
-              <input id="param-turbidez" type="number" step="0.1" />
+              <input id="param-turbidez" type="number" step="0.1" @bind="_nuevo.Turbidez" />
             </div>
             <div class="field">
               <label for="param-condiciones">Condiciones climáticas</label>
-              <textarea id="param-condiciones" placeholder="Cielo despejado, viento leve, etc."></textarea>
+              <textarea id="param-condiciones" placeholder="Cielo despejado, viento leve, etc." @bind="_nuevo.CondicionesClimaticas"></textarea>
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Guardar parámetros</button>
+              <label for="param-obs">Observaciones</label>
+              <textarea id="param-obs" placeholder="Opcional" @bind="_nuevo.Observaciones"></textarea>
             </div>
+            <div class="field">
+              <button class="btn-login" type="button" @onclick="GuardarNuevo">Guardar parámetros</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    }
+
+    @if (_tab == "editar")
+    {
+      <div class="section-grid">
+        <article class="card" style="grid-column: 1 / -1;">
+          <div class="card-label">Editar registro</div>
+          <div class="card-title">Actualizar medición</div>
+          @if (!string.IsNullOrWhiteSpace(_mensajeEditar))
+          {
+            <div style="@EstiloMensajeEditar">
+              @_mensajeEditar
+            </div>
+          }
+          <form class="contact-form">
+            <div class="field">
+              <label for="edit-param-id">Registro</label>
+              <select id="edit-param-id" @bind="_editarId" @bind:after="CargarEdicion">
+                <option value="0">-- Seleccione un registro --</option>
+                @foreach (var r in ParametrosService.ObtenerTodos())
+                {
+                  <option value="@r.Id">@r.FechaRegistro.ToString("dd/MM/yyyy HH:mm") — @ObtenerCodigoLote(r.LoteId)</option>
+                }
+              </select>
+            </div>
+            @if (_editarId > 0)
+            {
+              <div class="field">
+                <label for="edit-param-lote">Lote</label>
+                <select id="edit-param-lote" @bind="_editarLoteId">
+                  @foreach (var l in _lotesActivos)
+                  {
+                    <option value="@l.Id">@l.Codigo — @ObtenerNombreEstanque(l.EstanqueId)</option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label for="edit-param-fecha">Fecha</label>
+                <input id="edit-param-fecha" type="date" @bind="_editarFecha" />
+              </div>
+              <div class="field">
+                <label for="edit-param-hora">Hora</label>
+                <input id="edit-param-hora" type="time" @bind="_editarHora" />
+              </div>
+              <div class="field">
+                <label for="edit-param-temp">Temperatura (°C)</label>
+                <input id="edit-param-temp" type="number" step="0.1" @bind="_editarTemperatura" />
+              </div>
+              <div class="field">
+                <label for="edit-param-ph">pH</label>
+                <input id="edit-param-ph" type="number" step="0.1" @bind="_editarPh" />
+              </div>
+              <div class="field">
+                <label for="edit-param-oxigeno">Oxígeno disuelto (mg/L)</label>
+                <input id="edit-param-oxigeno" type="number" step="0.1" @bind="_editarOxigeno" />
+              </div>
+              <div class="field">
+                <label for="edit-param-amonio">Amonio (mg/L)</label>
+                <input id="edit-param-amonio" type="number" step="0.01" @bind="_editarAmonio" />
+              </div>
+              <div class="field">
+                <label for="edit-param-nitritos">Nitritos (mg/L)</label>
+                <input id="edit-param-nitritos" type="number" step="0.01" @bind="_editarNitritos" />
+              </div>
+              <div class="field">
+                <label for="edit-param-turbidez">Turbidez (NTU)</label>
+                <input id="edit-param-turbidez" type="number" step="0.1" @bind="_editarTurbidez" />
+              </div>
+              <div class="field">
+                <label for="edit-param-condiciones">Condiciones climáticas</label>
+                <textarea id="edit-param-condiciones" @bind="_editarCondiciones"></textarea>
+              </div>
+              <div class="field">
+                <label for="edit-param-obs">Observaciones</label>
+                <textarea id="edit-param-obs" @bind="_editarObservaciones"></textarea>
+              </div>
+              <div class="field">
+                <button class="btn-login" type="button" @onclick="GuardarEdicion">Guardar cambios</button>
+              </div>
+            }
           </form>
         </article>
       </div>
@@ -128,35 +243,453 @@
       <div class="section-grid">
         <article class="card" style="grid-column: 1 / -1;">
           <div class="card-label">Historial</div>
-          <div class="card-title">Filtros básicos</div>
+          <div class="card-title">Filtros por estanque, lote y fechas</div>
           <form class="contact-form">
             <div class="field">
               <label for="hist-estanque">Estanque</label>
-              <select id="hist-estanque">
-                <option>Todos</option>
-                <option>E-001</option>
-                <option>E-101</option>
-                <option>E-205</option>
+              <select id="hist-estanque" @bind="_filtroEstanqueId">
+                <option value="0">Todos</option>
+                @foreach (var e in _estanques)
+                {
+                  <option value="@e.Id">@e.Nombre</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label for="hist-lote">Lote</label>
+              <select id="hist-lote" @bind="_filtroLoteId">
+                <option value="0">Todos</option>
+                @foreach (var l in _lotesActivos)
+                {
+                  <option value="@l.Id">@l.Codigo</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="hist-desde">Desde</label>
-              <input id="hist-desde" type="date" />
+              <input id="hist-desde" type="date" @bind="_filtroDesde" />
             </div>
             <div class="field">
               <label for="hist-hasta">Hasta</label>
-              <input id="hist-hasta" type="date" />
+              <input id="hist-hasta" type="date" @bind="_filtroHasta" />
             </div>
             <div class="field">
-              <button class="btn-login" type="button">Aplicar filtros</button>
+              <button class="btn-login" type="button" @onclick="AplicarFiltroHistorial">Aplicar filtros</button>
             </div>
           </form>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.6rem;margin:0.8rem 0;">
+            <div style="padding:0.6rem;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;">
+              <div style="font-size:0.78rem;color:#6b7280;">Registros en rango</div>
+              <div style="font-weight:700;">@_historialFiltrado.Count</div>
+            </div>
+            <div style="padding:0.6rem;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;">
+              <div style="font-size:0.78rem;color:#6b7280;">Alertas fuera de rango</div>
+              <div style="font-weight:700;color:@(ContarAlertasHistorial() > 0 ? "#991b1b" : "#166534");">@ContarAlertasHistorial()</div>
+            </div>
+            <div style="padding:0.6rem;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;">
+              <div style="font-size:0.78rem;color:#6b7280;">Tendencia promedio (Temp/O₂)</div>
+              <div style="font-weight:700;">@ObtenerResumenTendencia()</div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;margin-top:1rem;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+              <thead>
+                <tr style="background:#eef2ff;color:#111827;">
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Fecha / hora</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Lote</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estanque</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Temp.</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">pH</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">O₂</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Alerta</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (var r in _historialFiltrado)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerCodigoLote(r.LoteId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@ObtenerNombreEstanquePorLote(r.LoteId)</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Temperatura.ToString("0.0")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.Ph.ToString("0.0")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@r.OxigenoDisuelto.ToString("0.0")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">
+                      @if (EstaFueraRango(r))
+                      {
+                        <span style="display:inline-block;padding:0.15rem 0.4rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.75rem;">@ObtenerResumenAlerta(r)</span>
+                      }
+                      else
+                      {
+                        <span style="display:inline-block;padding:0.15rem 0.4rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.75rem;">OK</span>
+                      }
+                    </td>
+                  </tr>
+                }
+                @if (_historialFiltrado.Count == 0)
+                {
+                  <tr>
+                    <td colspan="7" style="padding:0.75rem;color:#6b7280;">Sin resultados para los filtros seleccionados.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </article>
       </div>
     }
   </div>
 </div>
 
+@if (_mostrarConfirmacionEliminar)
+{
+  <div style="position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000;">
+    <div style="background:white;border-radius:10px;max-width:420px;width:90%;padding:1rem;">
+      <div style="font-weight:700;margin-bottom:0.4rem;">Confirmar eliminación</div>
+      <div style="font-size:0.95rem;color:#374151;margin-bottom:1rem;">@_mensajeConfirmacionEliminar</div>
+      <div style="display:flex;justify-content:flex-end;gap:0.6rem;">
+        <button type="button" class="btn-login" style="background:#6b7280;" @onclick="CancelarEliminar">Cancelar</button>
+        <button type="button" class="btn-login" style="background:#991b1b;" @onclick="ConfirmarEliminar">Eliminar</button>
+      </div>
+    </div>
+  </div>
+}
+
 @code {
   private string _tab = "lista";
+  private List<ParametroAgua> _lista = new();
+  private List<ParametroAgua> _historialFiltrado = new();
+  private List<Lote> _lotesActivos = new();
+  private List<EspecieResumenDto> _especies = new();
+
+  private string _mensaje = string.Empty;
+  private bool _esError;
+  private string _mensajeRegistrar = string.Empty;
+  private bool _esErrorRegistrar;
+  private string _mensajeEditar = string.Empty;
+  private bool _esErrorEditar;
+
+  private ParametroAgua _nuevo = new();
+  private DateTime _nuevoFecha = DateTime.Today;
+  private TimeOnly _nuevoHora = new(8, 0);
+
+  private int _editarId;
+  private int _editarLoteId;
+  private DateTime _editarFecha = DateTime.Today;
+  private TimeOnly _editarHora = new(8, 0);
+  private decimal _editarTemperatura;
+  private decimal _editarPh;
+  private decimal _editarOxigeno;
+  private decimal _editarAmonio;
+  private decimal _editarNitritos;
+  private decimal _editarTurbidez;
+  private string _editarCondiciones = string.Empty;
+  private string _editarObservaciones = string.Empty;
+
+  private int _filtroEstanqueId;
+  private int _filtroLoteId;
+  private DateTime? _filtroDesde;
+  private DateTime? _filtroHasta;
+
+  private bool _mostrarConfirmacionEliminar;
+  private string _mensajeConfirmacionEliminar = string.Empty;
+  private int _idEliminarPendiente;
+
+  private readonly List<CatalogoItem> _estanques = new()
+  {
+    new(1, "E-001 (pequeño)"),
+    new(2, "E-101 (mediano)"),
+    new(3, "E-205 (grande)")
+  };
+
+  protected override void OnInitialized()
+  {
+    RefrescarLotes();
+    _especies = CatalogosService.ObtenerEspecies();
+    InicializarNuevo();
+    RefrescarLista();
+    _historialFiltrado = ParametrosService.ObtenerTodos().ToList();
+    _filtroDesde = DateTime.Today.AddDays(-30);
+    _filtroHasta = DateTime.Today;
+  }
+
+  private void RefrescarLotes()
+  {
+    _lotesActivos = LotesService.ObtenerActivos();
+    if (_lotesActivos.Count == 0)
+    {
+      return;
+    }
+
+    if (_nuevo.LoteId <= 0 || _lotesActivos.All(l => l.Id != _nuevo.LoteId))
+    {
+      _nuevo.LoteId = _lotesActivos[0].Id;
+    }
+  }
+
+  private void InicializarNuevo()
+  {
+    _nuevo = new ParametroAgua
+    {
+      Temperatura = 20m,
+      Ph = 7.0m,
+      OxigenoDisuelto = 6.5m,
+      Amonio = 0.1m,
+      Nitritos = 0.02m,
+      Turbidez = 12m,
+      LoteId = _lotesActivos.FirstOrDefault()?.Id ?? 0
+    };
+    _nuevoFecha = DateTime.Today;
+    _nuevoHora = new TimeOnly(DateTime.Now.Hour, DateTime.Now.Minute);
+  }
+
+  private void RefrescarLista()
+  {
+    _lista = ParametrosService.ObtenerTodos().ToList();
+  }
+
+  private void GuardarNuevo()
+  {
+    _nuevo.FechaRegistro = ComponerFechaHora(_nuevoFecha, _nuevoHora);
+    var resultado = ParametrosService.Crear(_nuevo);
+    MostrarMensajeRegistrar(resultado.mensaje, !resultado.exito);
+    if (!resultado.exito)
+    {
+      return;
+    }
+
+    InicializarNuevo();
+    RefrescarLista();
+    AplicarFiltroHistorial();
+    _tab = "lista";
+  }
+
+  private void IrAEditar(int id)
+  {
+    _editarId = id;
+    _tab = "editar";
+    CargarEdicion();
+  }
+
+  private void CargarEdicionSiHaySeleccion()
+  {
+    if (_editarId > 0)
+    {
+      CargarEdicion();
+    }
+  }
+
+  private void CargarEdicion()
+  {
+    _mensajeEditar = string.Empty;
+    var r = ParametrosService.ObtenerPorId(_editarId);
+    if (r is null)
+    {
+      _editarId = 0;
+      return;
+    }
+
+    _editarLoteId = r.LoteId;
+    _editarFecha = r.FechaRegistro.Date;
+    _editarHora = TimeOnly.FromDateTime(r.FechaRegistro);
+    _editarTemperatura = r.Temperatura;
+    _editarPh = r.Ph;
+    _editarOxigeno = r.OxigenoDisuelto;
+    _editarAmonio = r.Amonio;
+    _editarNitritos = r.Nitritos;
+    _editarTurbidez = r.Turbidez;
+    _editarCondiciones = r.CondicionesClimaticas ?? string.Empty;
+    _editarObservaciones = r.Observaciones ?? string.Empty;
+  }
+
+  private void GuardarEdicion()
+  {
+    if (_editarId <= 0)
+    {
+      MostrarMensajeEditar("Seleccione un registro.", true);
+      return;
+    }
+
+    var fechaHora = ComponerFechaHora(_editarFecha, _editarHora);
+    var resultado = ParametrosService.Actualizar(
+      _editarId,
+      _editarLoteId,
+      fechaHora,
+      _editarTemperatura,
+      _editarPh,
+      _editarOxigeno,
+      _editarAmonio,
+      _editarNitritos,
+      _editarTurbidez,
+      string.IsNullOrWhiteSpace(_editarCondiciones) ? null : _editarCondiciones.Trim(),
+      string.IsNullOrWhiteSpace(_editarObservaciones) ? null : _editarObservaciones.Trim());
+
+    MostrarMensajeEditar(resultado.mensaje, !resultado.exito);
+    if (!resultado.exito)
+    {
+      return;
+    }
+
+    RefrescarLista();
+    AplicarFiltroHistorial();
+    _tab = "lista";
+  }
+
+  private void SolicitarEliminar(int id)
+  {
+    var r = ParametrosService.ObtenerPorId(id);
+    var texto = r is null
+        ? "¿Eliminar este registro?"
+        : $"¿Eliminar la medición del {r.FechaRegistro:dd/MM/yyyy HH:mm} ({ObtenerCodigoLote(r.LoteId)})?";
+    _mensajeConfirmacionEliminar = texto;
+    _idEliminarPendiente = id;
+    _mostrarConfirmacionEliminar = true;
+  }
+
+  private void ConfirmarEliminar()
+  {
+    _mostrarConfirmacionEliminar = false;
+    var resultado = ParametrosService.Eliminar(_idEliminarPendiente);
+    MostrarMensaje(resultado.mensaje, !resultado.exito);
+    RefrescarLista();
+    AplicarFiltroHistorial();
+    if (_editarId == _idEliminarPendiente)
+    {
+      _editarId = 0;
+    }
+
+    _idEliminarPendiente = 0;
+  }
+
+  private void CancelarEliminar()
+  {
+    _mostrarConfirmacionEliminar = false;
+    _idEliminarPendiente = 0;
+  }
+
+  private void AplicarFiltroHistorial()
+  {
+    int? e = _filtroEstanqueId > 0 ? _filtroEstanqueId : null;
+    int? l = _filtroLoteId > 0 ? _filtroLoteId : null;
+    DateTime? d0 = _filtroDesde;
+    DateTime? d1 = _filtroHasta;
+    _historialFiltrado = ParametrosService.ObtenerFiltrados(e, l, d0, d1).ToList();
+  }
+
+  private static DateTime ComponerFechaHora(DateTime fecha, TimeOnly hora)
+  {
+    return fecha.Date + hora.ToTimeSpan();
+  }
+
+  private string ObtenerNombreEstanque(int estanqueId)
+    => _estanques.FirstOrDefault(x => x.Id == estanqueId)?.Nombre ?? $"Estanque {estanqueId}";
+
+  private string ObtenerCodigoLote(int loteId)
+  {
+    var l = LotesService.ObtenerPorId(loteId);
+    return l?.Codigo ?? $"Lote {loteId}";
+  }
+
+  private string ObtenerNombreEstanquePorLote(int loteId)
+  {
+    var l = LotesService.ObtenerPorId(loteId);
+    return l is null ? "—" : ObtenerNombreEstanque(l.EstanqueId);
+  }
+
+  private EspecieResumenDto? ObtenerEspeciePorLote(int loteId)
+  {
+    var lote = LotesService.ObtenerPorId(loteId);
+    if (lote is null)
+    {
+      return null;
+    }
+
+    return _especies.FirstOrDefault(e => e.IdEspecie == lote.EspecieId);
+  }
+
+  private bool EstaFueraRango(ParametroAgua r)
+  {
+    var e = ObtenerEspeciePorLote(r.LoteId);
+    if (e is null)
+    {
+      return false;
+    }
+
+    return r.Temperatura < e.TempMin
+      || r.Temperatura > e.TempMax
+      || r.Ph < e.PhMin
+      || r.Ph > e.PhMax
+      || r.OxigenoDisuelto < e.OxigenoMin;
+  }
+
+  private string ObtenerResumenAlerta(ParametroAgua r)
+  {
+    var e = ObtenerEspeciePorLote(r.LoteId);
+    if (e is null)
+    {
+      return "Sin ref.";
+    }
+
+    var alertas = new List<string>();
+    if (r.Temperatura < e.TempMin || r.Temperatura > e.TempMax) alertas.Add("Temp");
+    if (r.Ph < e.PhMin || r.Ph > e.PhMax) alertas.Add("pH");
+    if (r.OxigenoDisuelto < e.OxigenoMin) alertas.Add("O2");
+    return alertas.Count == 0 ? "OK" : string.Join(", ", alertas);
+  }
+
+  private int ContarAlertasHistorial()
+      => _historialFiltrado.Count(EstaFueraRango);
+
+  private string ObtenerResumenTendencia()
+  {
+    if (_historialFiltrado.Count == 0)
+    {
+      return "—";
+    }
+
+    var temp = _historialFiltrado.Average(x => x.Temperatura);
+    var oxi = _historialFiltrado.Average(x => x.OxigenoDisuelto);
+    return $"{temp:0.0}C / {oxi:0.0} mg/L";
+  }
+
+  private void MostrarMensaje(string mensaje, bool esError)
+  {
+    _mensaje = mensaje;
+    _esError = esError;
+  }
+
+  private void MostrarMensajeRegistrar(string mensaje, bool esError)
+  {
+    _mensajeRegistrar = mensaje;
+    _esErrorRegistrar = esError;
+  }
+
+  private void MostrarMensajeEditar(string mensaje, bool esError)
+  {
+    _mensajeEditar = mensaje;
+    _esErrorEditar = esError;
+  }
+
+  private string EstiloMensaje
+    => _esError
+        ? "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;"
+        : "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
+
+  private string EstiloMensajeRegistrar
+    => _esErrorRegistrar
+        ? EstiloMensajeError
+        : EstiloMensajeOk;
+
+  private string EstiloMensajeEditar
+    => _esErrorEditar
+        ? EstiloMensajeError
+        : EstiloMensajeOk;
+
+  private static string EstiloMensajeOk
+    => "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#dcfce7;color:#166534;font-size:0.9rem;";
+
+  private static string EstiloMensajeError
+    => "margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:0.9rem;";
+
+  private sealed record CatalogoItem(int Id, string Nombre);
 }

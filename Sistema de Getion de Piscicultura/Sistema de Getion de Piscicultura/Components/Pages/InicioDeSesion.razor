@@ -1,5 +1,6 @@
 @page "/inicio-de-sesion"
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.WebUtilities
 @rendermode InteractiveServer
 
 <PageTitle>Inicio de sesión · Sistema de Piscicultura</PageTitle>
@@ -11,27 +12,63 @@
     </div>
     <h1 class="section-title" id="login-title">Iniciar sesión</h1>
     <p class="login-subtitle">Accede al Panel de Gestión de Piscicultura.</p>
-    <div class="contact-form">
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+      <div class="login-validation-summary">@_error</div>
+    }
+
+    <form method="post" action="/auth/login" class="contact-form">
+      <input type="hidden" name="returnUrl" value="@_returnUrl" />
       <div class="field">
         <label for="usuario">Usuario</label>
-        <input id="usuario" name="usuario" type="text" autocomplete="username" placeholder="Ej. tecnico01" />
+        <input id="usuario"
+               name="username"
+               type="text"
+               class="login-input"
+               autocomplete="username"
+               placeholder="Ej. tecnico01"
+               required />
       </div>
       <div class="field">
         <label for="password">Contraseña</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Ingresa tu contraseña" />
+        <input id="password"
+               name="password"
+               type="password"
+               class="login-input"
+               autocomplete="current-password"
+               placeholder="Ingresa tu contraseña"
+               required />
       </div>
       <div class="field">
-        <button class="btn-login" type="button" @onclick="IrAlPrincipal">Entrar al sistema</button>
+        <button class="btn-login" type="submit">Entrar al sistema</button>
       </div>
-    </div>
+    </form>
   </div>
 </div>
 
 @code {
   [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+  private string _error = string.Empty;
+  private string _returnUrl = "/principal";
 
-  private void IrAlPrincipal()
+  protected override void OnInitialized()
   {
-    NavigationManager.NavigateTo("/principal");
+    var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+    var query = QueryHelpers.ParseQuery(uri.Query);
+
+    if (query.TryGetValue("error", out var error) && error == "credenciales")
+    {
+      _error = "Usuario o contraseña incorrectos.";
+    }
+
+    if (query.TryGetValue("returnUrl", out var returnUrl))
+    {
+      var value = returnUrl.ToString();
+      if (!string.IsNullOrWhiteSpace(value) && value.StartsWith("/", StringComparison.Ordinal))
+      {
+        _returnUrl = value;
+      }
+    }
   }
 }

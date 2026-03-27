@@ -1,6 +1,7 @@
 @using Sistema_de_Getion_de_Piscicultura.Modelos
 @using Sistema_de_Getion_de_Piscicultura.Servicios
 @inject Lotes_Service LotesService
+@inject Catalogos_Service CatalogosService
 
 <div class="section-container">
   <div>
@@ -16,6 +17,12 @@
         <article class="card" style="grid-column: 1 / -1;">
           <div class="card-label">Lotes activos</div>
           <div class="card-title">Vista general</div>
+          @if (!TieneCatalogosMinimos)
+          {
+            <div style="margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fff7ed;color:#9a3412;font-size:0.9rem;">
+              Faltan catálogos activos en base de datos (especies, estanques o proveedores). Carga esos datos para registrar/editar lotes.
+            </div>
+          }
           @if (!string.IsNullOrWhiteSpace(_mensaje))
           {
             <div style="@EstiloMensaje">
@@ -107,7 +114,7 @@
               <input id="lote-cantidad" type="number" min="1" @bind="_nuevo.CantidadInicial" placeholder="Ej. 3000" />
             </div>
             <div class="field">
-              <button class="btn-login" type="button" @onclick="SolicitarCrearLote">Guardar lote</button>
+              <button class="btn-login" type="button" @onclick="SolicitarCrearLote" disabled="@(!TieneCatalogosMinimos)">Guardar lote</button>
             </div>
           </form>
         </article>
@@ -186,7 +193,7 @@
                 <input id="editar-lote-cantidad" type="number" min="0" value="@_editarCantidadActual" disabled />
               </div>
               <div class="field">
-                <button class="btn-login" type="button" @onclick="SolicitarGuardarEdicion">Guardar cambios</button>
+                <button class="btn-login" type="button" @onclick="SolicitarGuardarEdicion" disabled="@(!TieneCatalogosMinimos)">Guardar cambios</button>
                 <button class="btn-login" style="margin-left:0.6rem;background:#991b1b;" type="button" @onclick="SolicitarAnularDesdeEdicion">Anular lote</button>
               </div>
             }
@@ -226,10 +233,7 @@
   {
     FechaSiembra = DateTime.Today,
     FaseActual = FaseCrecimiento.Alevinaje,
-    Estado = EstadoLote.Activo,
-    EspecieId = 1,
-    EstanqueId = 1,
-    ProveedorId = 1
+    Estado = EstadoLote.Activo
   };
 
   private int _loteEditarId;
@@ -237,34 +241,19 @@
   private DateTime _editarFechaSiembra = DateTime.Today;
   private int _editarCantidadInicial = 1;
   private int _editarCantidadActual;
-  private int _editarEspecieId = 1;
-  private int _editarEstanqueId = 1;
-  private int _editarProveedorId = 1;
+  private int _editarEspecieId;
+  private int _editarEstanqueId;
+  private int _editarProveedorId;
   private FaseCrecimiento _editarFaseActual = FaseCrecimiento.Alevinaje;
 
-  private readonly List<CatalogoItem> _especies = new()
-  {
-    new(1, "Trucha arcoíris"),
-    new(2, "Carpa común"),
-    new(3, "Tilapia")
-  };
-
-  private readonly List<CatalogoItem> _estanques = new()
-  {
-    new(1, "E-001 (pequeño)"),
-    new(2, "E-101 (mediano)"),
-    new(3, "E-205 (grande)")
-  };
-
-  private readonly List<CatalogoItem> _proveedores = new()
-  {
-    new(1, "Acuicultura Andina SRL"),
-    new(2, "Piscigranjas Altiplano"),
-    new(3, "Truchas del Sur Ltda.")
-  };
+  private List<CatalogoItem> _especies = new();
+  private List<CatalogoItem> _estanques = new();
+  private List<CatalogoItem> _proveedores = new();
+  private bool TieneCatalogosMinimos => _especies.Count > 0 && _estanques.Count > 0 && _proveedores.Count > 0;
 
   protected override void OnInitialized()
   {
+    CargarCatalogos();
     RefrescarLotes();
     ActualizarCodigoSiguiente();
   }
@@ -276,6 +265,12 @@
 
   private void EjecutarCrearLote()
   {
+    if (!TieneCatalogosMinimos)
+    {
+      MostrarMensaje("No es posible crear lotes: faltan catálogos activos en BD.", true);
+      return;
+    }
+
     var lote = new Lote
     {
       FechaSiembra = _nuevo.FechaSiembra,
@@ -297,9 +292,9 @@
       FechaSiembra = DateTime.Today,
       FaseActual = FaseCrecimiento.Alevinaje,
       Estado = EstadoLote.Activo,
-      EspecieId = 1,
-      EstanqueId = 1,
-      ProveedorId = 1
+      EspecieId = ObtenerIdEspecieDefecto(),
+      EstanqueId = ObtenerIdEstanqueDefecto(),
+      ProveedorId = ObtenerIdProveedorDefecto()
     };
 
     RefrescarLotes();
@@ -321,6 +316,12 @@
 
   private void EjecutarGuardarEdicion()
   {
+    if (!TieneCatalogosMinimos)
+    {
+      MostrarMensaje("No es posible editar lotes: faltan catálogos activos en BD.", true);
+      return;
+    }
+
     var resultado = LotesService.Editar(
       _loteEditarId,
       _editarFechaSiembra,
@@ -459,11 +460,41 @@
     _editarFechaSiembra = DateTime.Today;
     _editarCantidadInicial = 1;
     _editarCantidadActual = 0;
-    _editarEspecieId = 1;
-    _editarEstanqueId = 1;
-    _editarProveedorId = 1;
+    _editarEspecieId = ObtenerIdEspecieDefecto();
+    _editarEstanqueId = ObtenerIdEstanqueDefecto();
+    _editarProveedorId = ObtenerIdProveedorDefecto();
     _editarFaseActual = FaseCrecimiento.Alevinaje;
   }
+
+  private void CargarCatalogos()
+  {
+    try
+    {
+      _especies = CatalogosService.ObtenerEspeciesActivas().Select(x => new CatalogoItem(x.Id, x.Nombre)).ToList();
+      _estanques = CatalogosService.ObtenerEstanquesActivos().Select(x => new CatalogoItem(x.Id, x.Nombre)).ToList();
+      _proveedores = CatalogosService.ObtenerProveedoresActivos().Select(x => new CatalogoItem(x.Id, x.Nombre)).ToList();
+
+      _nuevo.EspecieId = ObtenerIdEspecieDefecto();
+      _nuevo.EstanqueId = ObtenerIdEstanqueDefecto();
+      _nuevo.ProveedorId = ObtenerIdProveedorDefecto();
+      _editarEspecieId = ObtenerIdEspecieDefecto();
+      _editarEstanqueId = ObtenerIdEstanqueDefecto();
+      _editarProveedorId = ObtenerIdProveedorDefecto();
+    }
+    catch (Exception ex)
+    {
+      MostrarMensaje($"No se pudieron cargar los catálogos desde BD: {ex.Message}", true);
+    }
+  }
+
+  private int ObtenerIdEspecieDefecto()
+      => _especies.FirstOrDefault()?.Id ?? 0;
+
+  private int ObtenerIdEstanqueDefecto()
+      => _estanques.FirstOrDefault()?.Id ?? 0;
+
+  private int ObtenerIdProveedorDefecto()
+      => _proveedores.FirstOrDefault()?.Id ?? 0;
 
   private void RefrescarLotes()
   {

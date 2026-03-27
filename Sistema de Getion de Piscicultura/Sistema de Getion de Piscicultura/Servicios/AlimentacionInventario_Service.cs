@@ -1,17 +1,23 @@
+using System.Data;
+using Dapper;
+using Microsoft.Data.SqlClient;
+using Sistema_de_Getion_de_Piscicultura.Infraestructura;
 using Sistema_de_Getion_de_Piscicultura.Modelos;
 
 namespace Sistema_de_Getion_de_Piscicultura.Servicios;
 
 public class AlimentacionInventario_Service
 {
+    private readonly IDbConnectionFactory _db;
     private readonly Lotes_Service _lotesService;
     private readonly Inventario_Service _inventarioService;
 
-    private readonly List<RegistroAlimentacion> _registros = new();
-    private int _nextId = 1;
-
-    public AlimentacionInventario_Service(Lotes_Service lotesService, Inventario_Service inventarioService)
+    public AlimentacionInventario_Service(
+        IDbConnectionFactory db,
+        Lotes_Service lotesService,
+        Inventario_Service inventarioService)
     {
+        _db = db;
         _lotesService = lotesService;
         _inventarioService = inventarioService;
     }
@@ -20,13 +26,36 @@ public class AlimentacionInventario_Service
         => _inventarioService.ObtenerTodos();
 
     public IReadOnlyList<RegistroAlimentacion> ObtenerRegistrosPorFecha(DateTime fecha)
-        => _registros.Where(r => r.FechaRegistro.Date == fecha.Date).OrderBy(r => r.Horario).ToList();
+    {
+        using var conn = _db.CreateConnection();
+        conn.Open();
+        const string sql = """
+            SELECT Id, LoteId, FechaRegistro, Horario, TipoAlimento, CantidadKg, InventarioItemId
+            FROM dbo.RegistrosAlimentacion
+            WHERE CAST(FechaRegistro AS date) = @d
+            ORDER BY Horario
+            """;
+        return conn.Query<RegistroAlimentacion>(sql, new { d = fecha.Date }).ToList();
+    }
 
     public IReadOnlyList<ConsumoEstanqueDto> ObtenerConsumoPorEstanque(DateTime fecha)
     {
-        var registrosDelDia = _registros.Where(r => r.FechaRegistro.Date == fecha.Date);
-
-        return AgruparConsumoPorEstanque(registrosDelDia);
+        using var conn = _db.CreateConnection();
+        conn.Open();
+        const string sql = """
+            SELECT
+                r.LoteId,
+                l.Codigo AS CodigoLote,
+                l.EstanqueId,
+                r.TipoAlimento,
+                CAST(SUM(r.CantidadKg) AS decimal(18,3)) AS CantidadKg
+            FROM dbo.RegistrosAlimentacion r
+            INNER JOIN dbo.Lotes l ON l.Id = r.LoteId
+            WHERE CAST(r.FechaRegistro AS date) = @fecha
+            GROUP BY r.LoteId, l.Codigo, l.EstanqueId, r.TipoAlimento
+            ORDER BY r.TipoAlimento, l.EstanqueId, l.Codigo
+            """;
+        return conn.Query<ConsumoEstanqueDto>(sql, new { fecha = fecha.Date }).ToList();
     }
 
     public IReadOnlyList<ConsumoEstanqueDto> ObtenerConsumoPorEstanqueRango(DateTime fechaInicio, DateTime fechaFin)
@@ -38,30 +67,22 @@ public class AlimentacionInventario_Service
             (inicio, fin) = (fin, inicio);
         }
 
-        var registrosRango = _registros.Where(r => r.FechaRegistro.Date >= inicio && r.FechaRegistro.Date <= fin);
-        return AgruparConsumoPorEstanque(registrosRango);
-    }
-
-    private IReadOnlyList<ConsumoEstanqueDto> AgruparConsumoPorEstanque(IEnumerable<RegistroAlimentacion> registros)
-    {
-        return registros
-            .GroupBy(r => new { r.LoteId, r.TipoAlimento })
-            .Select(g =>
-            {
-                var lote = _lotesService.ObtenerPorId(g.Key.LoteId);
-                return new ConsumoEstanqueDto
-                {
-                    LoteId = g.Key.LoteId,
-                    CodigoLote = lote?.Codigo ?? $"Lote {g.Key.LoteId}",
-                    EstanqueId = lote?.EstanqueId ?? 0,
-                    TipoAlimento = g.Key.TipoAlimento,
-                    CantidadKg = g.Sum(x => x.CantidadKg)
-                };
-            })
-            .OrderBy(x => x.TipoAlimento)
-            .ThenBy(x => x.EstanqueId)
-            .ThenBy(x => x.CodigoLote)
-            .ToList();
+        using var conn = _db.CreateConnection();
+        conn.Open();
+        const string sql = """
+            SELECT
+                r.LoteId,
+                l.Codigo AS CodigoLote,
+                l.EstanqueId,
+                r.TipoAlimento,
+                CAST(SUM(r.CantidadKg) AS decimal(18,3)) AS CantidadKg
+            FROM dbo.RegistrosAlimentacion r
+            INNER JOIN dbo.Lotes l ON l.Id = r.LoteId
+            WHERE CAST(r.FechaRegistro AS date) >= @inicio AND CAST(r.FechaRegistro AS date) <= @fin
+            GROUP BY r.LoteId, l.Codigo, l.EstanqueId, r.TipoAlimento
+            ORDER BY r.TipoAlimento, l.EstanqueId, l.Codigo
+            """;
+        return conn.Query<ConsumoEstanqueDto>(sql, new { inicio, fin }).ToList();
     }
 
     public (bool exito, string mensaje) RegistrarAlimentacion(
@@ -89,29 +110,75 @@ public class AlimentacionInventario_Service
         }
 
         var frecuenciaMaxima = ObtenerFrecuenciaMaxima(lote.FaseActual);
-        var frecuenciaActual = _registros.Count(r => r.LoteId == loteId && r.FechaRegistro.Date == fechaRegistro.Date);
-        if (frecuenciaActual >= frecuenciaMaxima)
+        var fechaDia = fechaRegistro.Date;
+
+        try
         {
-            return (false, $"Se alcanzó la frecuencia máxima diaria para la fase {lote.FaseActual} ({frecuenciaMaxima}).");
+            using var conn = _db.CreateConnection();
+            conn.Open();
+
+            var frecuenciaActual = conn.ExecuteScalar<int>(
+                """
+                SELECT COUNT(1)
+                FROM dbo.RegistrosAlimentacion
+                WHERE LoteId = @loteId AND CAST(FechaRegistro AS date) = @fecha
+                """,
+                new { loteId, fecha = fechaDia });
+
+            if (frecuenciaActual >= frecuenciaMaxima)
+            {
+                return (false, $"Se alcanzó la frecuencia máxima diaria para la fase {lote.FaseActual} ({frecuenciaMaxima}).");
+            }
+
+            using var tx = conn.BeginTransaction();
+            try
+            {
+                var pDesc = new DynamicParameters();
+                pDesc.Add("@Id", alimentoId);
+                pDesc.Add("@CantidadKg", cantidadKg);
+                pDesc.Add("@FilasAfectadas", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                conn.Execute(
+                    "dbo.sp_InventarioItem_DescontarStock",
+                    pDesc,
+                    tx,
+                    commandType: CommandType.StoredProcedure);
+
+                if (pDesc.Get<int>("@FilasAfectadas") == 0)
+                {
+                    tx.Rollback();
+                    return (false, "Stock insuficiente para registrar la alimentación.");
+                }
+
+                var pIns = new DynamicParameters();
+                pIns.Add("@LoteId", loteId);
+                pIns.Add("@FechaRegistro", fechaDia);
+                pIns.Add("@Horario", horario);
+                pIns.Add("@TipoAlimento", alimento.Nombre);
+                pIns.Add("@CantidadKg", cantidadKg);
+                pIns.Add("@InventarioItemId", alimentoId);
+                pIns.Add("@IdNuevo", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                conn.Execute(
+                    "dbo.sp_RegistroAlimentacion_Insertar",
+                    pIns,
+                    tx,
+                    commandType: CommandType.StoredProcedure);
+
+                RegistrarAlertaStockBajoSiAplica(conn, tx, alimentoId, loteId);
+                tx.Commit();
+                return (true, "Alimentación registrada correctamente.");
+            }
+            catch
+            {
+                tx.Rollback();
+                throw;
+            }
         }
-
-        var descuento = _inventarioService.DescontarStock(alimentoId, cantidadKg);
-        if (!descuento.exito)
+        catch (SqlException ex)
         {
-            return (false, "Stock insuficiente para registrar la alimentación.");
+            return (false, $"Error de base de datos: {ex.Message}");
         }
-
-        _registros.Add(new RegistroAlimentacion
-        {
-            Id = _nextId++,
-            LoteId = loteId,
-            FechaRegistro = fechaRegistro.Date,
-            Horario = horario,
-            TipoAlimento = alimento.Nombre,
-            CantidadKg = cantidadKg
-        });
-
-        return (true, "Alimentación registrada correctamente.");
     }
 
     private static int ObtenerFrecuenciaMaxima(FaseCrecimiento fase)
@@ -121,6 +188,52 @@ public class AlimentacionInventario_Service
             FaseCrecimiento.Juveniles => 4,
             _ => 3
         };
+
+    private static void RegistrarAlertaStockBajoSiAplica(SqlConnection conn, SqlTransaction tx, int inventarioItemId, int loteId)
+    {
+        if (conn.ExecuteScalar<int>(
+                "SELECT COUNT(1) FROM sys.tables WHERE name = 'Alerta' AND schema_id = SCHEMA_ID('dbo')",
+                transaction: tx) == 0)
+        {
+            return;
+        }
+
+        var item = conn.QueryFirstOrDefault<InventarioMinimoRow>(
+            """
+            SELECT Id, Nombre, StockKg, StockMinimoKg
+            FROM dbo.InventarioItems
+            WHERE Id = @Id;
+            """,
+            new { Id = inventarioItemId }, tx);
+
+        if (item is null || item.StockKg > item.StockMinimoKg)
+        {
+            return;
+        }
+
+        conn.Execute(
+            """
+            INSERT INTO dbo.Alerta (IdLote, FechaHora, Tipo, Nivel, Mensaje, Atendida, IdInventario)
+            VALUES (@IdLote, @FechaHora, @Tipo, @Nivel, @Mensaje, 0, @IdInventario);
+            """,
+            new
+            {
+                IdLote = loteId,
+                FechaHora = DateTime.Now,
+                Tipo = "StockAlimento",
+                Nivel = "Media",
+                Mensaje = $"Stock bajo de '{item.Nombre}': {item.StockKg:0.###} kg (mínimo {item.StockMinimoKg:0.###}).",
+                IdInventario = item.Id
+            }, tx);
+    }
+
+    private sealed class InventarioMinimoRow
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public decimal StockKg { get; set; }
+        public decimal StockMinimoKg { get; set; }
+    }
 }
 
 public class ConsumoEstanqueDto

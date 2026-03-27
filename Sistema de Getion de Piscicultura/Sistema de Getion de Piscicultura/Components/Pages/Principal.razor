@@ -1,6 +1,10 @@
 @page "/principal"
+@attribute [Authorize]
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Panel principal · Sistema de Piscicultura</PageTitle>
 
@@ -33,13 +37,17 @@
         <a class="sidebar-link @(_currentView == "inventario" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("inventario")' @onclick:preventDefault>Inventario</a>
         <a class="sidebar-link @(_currentView == "parametros-agua" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("parametros-agua")' @onclick:preventDefault>Parámetros del agua</a>
         <a class="sidebar-link @(_currentView == "alimentacion" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("alimentacion")' @onclick:preventDefault>Alimentación</a>
+        <a class="sidebar-link @(_currentView == "alertas" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("alertas")' @onclick:preventDefault>Alertas</a>
       </div>
       <div>
         <div class="sidebar-nav-section">Configuración</div>
         <a class="sidebar-link @(_currentView == "estanques" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("estanques")' @onclick:preventDefault>Estanques</a>
         <a class="sidebar-link @(_currentView == "especies" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("especies")' @onclick:preventDefault>Especies</a>
         <a class="sidebar-link @(_currentView == "proveedores" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("proveedores")' @onclick:preventDefault>Proveedores</a>
-        <a class="sidebar-link @(_currentView == "usuarios-roles" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("usuarios-roles")' @onclick:preventDefault>Usuarios y roles</a>
+        @if (EsAdministrador)
+        {
+          <a class="sidebar-link @(_currentView == "usuarios-roles" ? "sidebar-link--active" : "")"  @onclick='() => SelectView("usuarios-roles")' @onclick:preventDefault>Usuarios y roles</a>
+        }
       </div>
     </nav>
   </aside>
@@ -48,12 +56,18 @@
     <header class="layout-main-header">
       <div class="layout-main-title">Panel principal</div>
       <div class="layout-main-user">
-        Sesión iniciada como <strong>técnico.demo</strong> ·
-        <a href="/inicio-de-sesion" style="color: var(--baltic-blue); text-decoration: none;">Cerrar sesión</a>
+        Sesión iniciada como <strong>@_usuarioSesion</strong> (@_rolSesion) ·
+        <a href="/auth/logout" style="color: var(--baltic-blue); text-decoration: none;">Cerrar sesión</a>
       </div>
     </header>
 
     <main class="layout-main-body">
+      @if (!string.IsNullOrWhiteSpace(_mensajeAcceso))
+      {
+        <div style="margin:0.6rem 0;padding:0.6rem;border-radius:8px;background:#fff7ed;color:#9a3412;font-size:0.9rem;">
+          @_mensajeAcceso
+        </div>
+      }
       <div id="main-content">
         @if (_currentView == "dashboard")
         {
@@ -149,6 +163,10 @@
         {
           <AlimentacionContent />
         }
+        else if (_currentView == "alertas")
+        {
+          <AlertasContent />
+        }
         else if (_currentView == "estanques")
         {
           <EstanquesContent />
@@ -161,7 +179,7 @@
         {
           <ProveedoresContent />
         }
-        else if (_currentView == "usuarios-roles")
+        else if (_currentView == "usuarios-roles" && EsAdministrador)
         {
           <UsuariosYRolesContent />
         }
@@ -173,6 +191,27 @@
 @code {
   private string _currentView = "dashboard";
   private bool _renderChartsPending = true;
+  private string _usuarioSesion = "usuario";
+  private string _rolSesion = "rol";
+  private string _mensajeAcceso = string.Empty;
+
+  [CascadingParameter]
+  private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+  private bool EsAdministrador => string.Equals(_rolSesion, "Administrador", StringComparison.OrdinalIgnoreCase);
+
+  protected override async Task OnInitializedAsync()
+  {
+    if (AuthenticationStateTask is null)
+    {
+      return;
+    }
+
+    var state = await AuthenticationStateTask;
+    var user = state.User;
+
+    _usuarioSesion = user.Identity?.Name ?? "usuario";
+    _rolSesion = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? "Usuario";
+  }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
@@ -185,6 +224,15 @@
 
   private async Task SelectView(string view)
   {
+    _mensajeAcceso = string.Empty;
+
+    if (!PuedeVerModulo(view))
+    {
+      _currentView = "dashboard";
+      _mensajeAcceso = "No tienes permisos para acceder a ese módulo.";
+      return;
+    }
+
     _currentView = view;
 
     if (view == "dashboard")
@@ -192,5 +240,17 @@
       _renderChartsPending = true;
       await InvokeAsync(StateHasChanged);
     }
+  }
+
+  private bool PuedeVerModulo(string view)
+  {
+    // Regla mínima solicitada para HU-018 parcial:
+    // solo Administrador accede al módulo sensible de usuarios/roles.
+    if (string.Equals(view, "usuarios-roles", StringComparison.OrdinalIgnoreCase))
+    {
+      return EsAdministrador;
+    }
+
+    return true;
   }
 }

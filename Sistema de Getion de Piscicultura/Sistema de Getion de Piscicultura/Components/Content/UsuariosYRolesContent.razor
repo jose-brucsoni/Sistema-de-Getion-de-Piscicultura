@@ -1,3 +1,6 @@
+@using Sistema_de_Getion_de_Piscicultura.Servicios
+@inject Catalogos_Service CatalogosService
+
 <div class="section-container">
   <div>
     <div class="tabs">
@@ -20,43 +23,22 @@
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Nombre completo</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Rol</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Estado</th>
-                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Último acceso</th>
+                  <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Creado</th>
                   <th style="text-align:left;padding:0.5rem 0.6rem;border-bottom:1px solid #e5e7eb;">Correo</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">admin</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Ana Rodríguez</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Administrador</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#16a34a;">Activo</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026 08:12</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">ana.admin@lagosandinos.bo</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">tecnico01</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Carlos Pérez</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Técnico acuícola</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#16a34a;">Activo</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">17/03/2026 06:45</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">carlos.perez@lagosandinos.bo</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">tecnico02</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">María Gómez</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">Técnico acuícola</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:#f97316;">Suspendido</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">10/03/2026 15:20</td>
-                  <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">maria.gomez@lagosandinos.bo</td>
-                </tr>
-                <tr>
-                  <td style="padding:0.45rem 0.6rem;">supervisor01</td>
-                  <td style="padding:0.45rem 0.6rem;">Jorge López</td>
-                  <td style="padding:0.45rem 0.6rem;">Supervisor</td>
-                  <td style="padding:0.45rem 0.6rem;color:#16a34a;">Activo</td>
-                  <td style="padding:0.45rem 0.6rem;">16/03/2026 19:05</td>
-                  <td style="padding:0.45rem 0.6rem;">jorge.lopez@lagosandinos.bo</td>
-                </tr>
+                @foreach (var u in _usuarios)
+                {
+                  <tr>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@u.Username</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">—</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@u.RolNombre</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;color:@(u.Activo ? "#16a34a" : "#f97316");">@(u.Activo ? "Activo" : "Inactivo")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@u.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="padding:0.45rem 0.6rem;border-bottom:1px solid #f3f4f6;">@u.Correo</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -86,9 +68,10 @@
             <div class="field">
               <label for="nuevo-rol">Rol</label>
               <select id="nuevo-rol">
-                <option>Administrador</option>
-                <option>Técnico acuícola</option>
-                <option>Supervisor</option>
+                @foreach (var r in _roles)
+                {
+                  <option>@r.Nombre</option>
+                }
               </select>
             </div>
             <div class="field">
@@ -116,18 +99,19 @@
             <div class="field">
               <label for="editar-usuario">Usuario</label>
               <select id="editar-usuario">
-                <option>admin</option>
-                <option>tecnico01</option>
-                <option>tecnico02</option>
-                <option>supervisor01</option>
+                @foreach (var u in _usuarios)
+                {
+                  <option>@u.Username</option>
+                }
               </select>
             </div>
             <div class="field">
               <label for="editar-rol">Rol</label>
               <select id="editar-rol">
-                <option>Administrador</option>
-                <option>Técnico acuícola</option>
-                <option>Supervisor</option>
+                @foreach (var r in _roles)
+                {
+                  <option>@r.Nombre</option>
+                }
               </select>
             </div>
             <div class="field">
@@ -149,4 +133,12 @@
 
 @code {
   private string _tab = "lista";
+  private List<UsuarioResumenDto> _usuarios = new();
+  private List<RolDto> _roles = new();
+
+  protected override void OnInitialized()
+  {
+    _usuarios = CatalogosService.ObtenerUsuariosConRol();
+    _roles = CatalogosService.ObtenerRolesActivos();
+  }
 }

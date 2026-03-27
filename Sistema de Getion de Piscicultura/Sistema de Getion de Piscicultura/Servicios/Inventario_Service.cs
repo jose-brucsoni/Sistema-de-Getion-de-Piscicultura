@@ -1,23 +1,40 @@
+using System.Data;
+using Dapper;
+using Microsoft.Data.SqlClient;
+using Sistema_de_Getion_de_Piscicultura.Infraestructura;
 using Sistema_de_Getion_de_Piscicultura.Modelos;
 
 namespace Sistema_de_Getion_de_Piscicultura.Servicios;
 
 public class Inventario_Service
 {
-    private readonly List<InventarioItem> _items = new()
-    {
-        new InventarioItem { Id = 1, Nombre = "Micro-granulado Fase 1", Categoria = "Alimento", StockKg = 420m, StockMinimoKg = 80m },
-        new InventarioItem { Id = 2, Nombre = "Pellets juveniles Fase 2", Categoria = "Alimento", StockKg = 780m, StockMinimoKg = 120m },
-        new InventarioItem { Id = 3, Nombre = "Concentrado engorde Fase 3-4", Categoria = "Alimento", StockKg = 1050m, StockMinimoKg = 180m }
-    };
+    private readonly IDbConnectionFactory _db;
 
-    private int _nextId = 4;
+    public Inventario_Service(IDbConnectionFactory db)
+    {
+        _db = db;
+    }
 
     public List<InventarioItem> ObtenerTodos()
-        => _items.OrderBy(x => x.Nombre).ToList();
+    {
+        using var conn = _db.CreateConnection();
+        conn.Open();
+        return conn.Query<InventarioItem>(
+                "dbo.sp_InventarioItem_Listar",
+                commandType: CommandType.StoredProcedure)
+            .OrderBy(x => x.Nombre)
+            .ToList();
+    }
 
     public InventarioItem? ObtenerPorId(int itemId)
-        => _items.FirstOrDefault(x => x.Id == itemId);
+    {
+        using var conn = _db.CreateConnection();
+        conn.Open();
+        return conn.QueryFirstOrDefault<InventarioItem>(
+            "dbo.sp_InventarioItem_ObtenerPorId",
+            new { Id = itemId },
+            commandType: CommandType.StoredProcedure);
+    }
 
     public (bool exito, string mensaje) AgregarNuevoItem(string nombre, string categoria, decimal stockInicialKg, decimal stockMinimoKg)
     {
@@ -26,64 +43,100 @@ public class Inventario_Service
             return (false, "El nombre del insumo es obligatorio.");
         }
 
-        if (_items.Any(i => i.Nombre.Equals(nombre.Trim(), StringComparison.OrdinalIgnoreCase)))
-        {
-            return (false, "Ya existe un insumo con ese nombre.");
-        }
-
         if (stockInicialKg < 0 || stockMinimoKg < 0)
         {
             return (false, "Los valores de stock no pueden ser negativos.");
         }
 
-        _items.Add(new InventarioItem
+        try
         {
-            Id = _nextId++,
-            Nombre = nombre.Trim(),
-            Categoria = string.IsNullOrWhiteSpace(categoria) ? "General" : categoria.Trim(),
-            StockKg = stockInicialKg,
-            StockMinimoKg = stockMinimoKg
-        });
+            using var conn = _db.CreateConnection();
+            conn.Open();
 
-        return (true, "Insumo agregado al inventario.");
+            var existe = conn.ExecuteScalar<int>(
+                "SELECT COUNT(1) FROM dbo.InventarioItems WHERE LOWER(Nombre) = LOWER(@n)",
+                new { n = nombre.Trim() });
+            if (existe > 0)
+            {
+                return (false, "Ya existe un insumo con ese nombre.");
+            }
+
+            var p = new DynamicParameters();
+            p.Add("@Nombre", nombre.Trim());
+            p.Add("@Categoria", string.IsNullOrWhiteSpace(categoria) ? "General" : categoria.Trim());
+            p.Add("@StockKg", stockInicialKg);
+            p.Add("@StockMinimoKg", stockMinimoKg);
+            p.Add("@IdNuevo", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            conn.Execute("dbo.sp_InventarioItem_Insertar", p, commandType: CommandType.StoredProcedure);
+            return (true, "Insumo agregado al inventario.");
+        }
+        catch (SqlException ex)
+        {
+            return (false, MensajeSql(ex));
+        }
     }
 
     public (bool exito, string mensaje) AgregarStock(int itemId, decimal cantidadKg)
     {
-        var item = _items.FirstOrDefault(x => x.Id == itemId);
-        if (item is null)
-        {
-            return (false, "Insumo no encontrado.");
-        }
-
         if (cantidadKg <= 0)
         {
             return (false, "La cantidad debe ser mayor a cero.");
         }
 
-        item.StockKg += cantidadKg;
-        return (true, "Stock actualizado correctamente.");
+        try
+        {
+            using var conn = _db.CreateConnection();
+            conn.Open();
+            var p = new DynamicParameters();
+            p.Add("@Id", itemId);
+            p.Add("@CantidadKg", cantidadKg);
+            p.Add("@FilasAfectadas", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            conn.Execute("dbo.sp_InventarioItem_AgregarStock", p, commandType: CommandType.StoredProcedure);
+            if (p.Get<int>("@FilasAfectadas") == 0)
+            {
+                return (false, "Insumo no encontrado.");
+            }
+
+            return (true, "Stock actualizado correctamente.");
+        }
+        catch (SqlException ex)
+        {
+            return (false, MensajeSql(ex));
+        }
     }
 
     public (bool exito, string mensaje) DescontarStock(int itemId, decimal cantidadKg)
     {
-        var item = _items.FirstOrDefault(x => x.Id == itemId);
-        if (item is null)
-        {
-            return (false, "Insumo no encontrado.");
-        }
-
         if (cantidadKg <= 0)
         {
             return (false, "La cantidad debe ser mayor a cero.");
         }
 
-        if (item.StockKg < cantidadKg)
+        try
         {
-            return (false, "Stock insuficiente.");
-        }
+            using var conn = _db.CreateConnection();
+            conn.Open();
+            var p = new DynamicParameters();
+            p.Add("@Id", itemId);
+            p.Add("@CantidadKg", cantidadKg);
+            p.Add("@FilasAfectadas", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-        item.StockKg -= cantidadKg;
-        return (true, "Stock descontado correctamente.");
+            conn.Execute("dbo.sp_InventarioItem_DescontarStock", p, commandType: CommandType.StoredProcedure);
+            if (p.Get<int>("@FilasAfectadas") == 0)
+            {
+                return (false, "Stock insuficiente.");
+            }
+
+            return (true, "Stock descontado correctamente.");
+        }
+        catch (SqlException ex)
+        {
+            return (false, MensajeSql(ex));
+        }
     }
+
+    private static string MensajeSql(SqlException ex)
+        => $"Error de base de datos: {ex.Message}";
 }
